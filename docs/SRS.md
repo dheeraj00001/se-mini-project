@@ -128,14 +128,14 @@ The system is an autonomous, dual-mode add-on service. It can be deployed as an 
 - **Software Dependencies**: Python 3.11, CUDA 12.x / 13.x, PyTorch 2.2+, Transformers 4.40+, Qdrant-Client 1.9+, FastAPI 0.111+.
 
 ### 2.5 Design and Implementation Constraints
-- **VRAM Constraint (CON-01)**: Generator LLM ([`google/gemma-4-E4B`](https://huggingface.co/google/gemma-4-E4B)) must operate within 4 GB VRAM via INT4/4-bit quantization on `cuda:0`.
-- **Split-Compute Constraint (CON-02)**: Dense embeddings ([`google/embeddinggemma-2`](https://huggingface.co/google/embeddinggemma-2)) and NLI cross-encoders ([`cross-encoder/nli-deberta-v3-base`](https://huggingface.co/cross-encoder/nli-deberta-v3-base)) must execute on host CPU threads to avoid GPU OOM crashes (ADR-0002).
+- **VRAM Constraint (CON-01)**: Generator LLM ([`google/gemma-4-E4B-it-qat-mobile-transformers`](https://huggingface.co/google/gemma-4-E4B-it-qat-mobile-transformers)) must operate within 4 GB VRAM using mobile QAT (`wNa8o8` mixed-precision schema with 2-bit decoding layers targeting $\le 2.5\text{ GB}$ VRAM) on `cuda:0` (empirical hardware verification required before finalizing production assumptions).
+- **Split-Compute Constraint (CON-02)**: Dense embeddings ([`google/embeddinggemma-2`](https://huggingface.co/google/embeddinggemma-2) with asymmetric `encode_query`/`encode_document` prefixes) and NLI cross-encoders ([`cross-encoder/nli-deberta-v3-base`](https://huggingface.co/cross-encoder/nli-deberta-v3-base) with index label order `[0: contradiction, 1: entailment, 2: neutral]`) must execute on host CPU threads to avoid GPU OOM crashes (ADR-0002).
 - **Air-Gap Constraint (CON-03)**: Tier 3 external search is strictly opt-in; the server enforces an unbypassable ceiling (`SERVER_MAX_TIER`).
 - **Buffering Constraint (CON-04)**: Streaming requests must be buffered in full prior to emitting synthetic SSE chunks to prevent unverified token leakage.
 
 ### 2.6 Assumptions and Dependencies
 - NLI thresholds ($\tau_e = 0.70, \tau_c = 0.70, \text{safety} = 0.85$) are initial operational defaults requiring experimental calibration on FEVER/HaluEval validation splits.
-- Local Qdrant operates in embedded disk-storage mode (`./data/qdrant_storage`), requiring no external Docker daemon for core operation.
+- Local Qdrant operates in embedded disk-storage mode (`./data/qdrant_storage`), requiring no external Docker daemon for core operation. Vector collections must be created/recreated matching the 768-dimensional space of EmbeddingGemma 2 with model metadata.
 
 ---
 
@@ -147,9 +147,9 @@ The system is an autonomous, dual-mode add-on service. It can be deployed as an 
 
 ### 3.2 Software Interfaces
 - **OpenAI Client SDK Compatibility**: Emulates `/v1/chat/completions` API schema supporting standard `messages`, `temperature`, `model`, and `stream` parameters.
-- **Local Gemma Generator Interface**: HuggingFace `transformers` pipeline executing 4-bit quantized [`google/gemma-4-E4B`](https://huggingface.co/google/gemma-4-E4B) on `cuda:0`.
-- **Dense Embedder Interface**: HuggingFace [`google/embeddinggemma-2`](https://huggingface.co/google/embeddinggemma-2) running on `cpu`.
-- **NLI Engine Interface**: HuggingFace [`cross-encoder/nli-deberta-v3-base`](https://huggingface.co/cross-encoder/nli-deberta-v3-base) running on `cpu`.
+- **Local Gemma Generator Interface**: HuggingFace `transformers` pipeline executing QAT mobile quantized [`google/gemma-4-E4B-it-qat-mobile-transformers`](https://huggingface.co/google/gemma-4-E4B-it-qat-mobile-transformers) on `cuda:0`.
+- **Dense Embedder Interface**: HuggingFace [`google/embeddinggemma-2`](https://huggingface.co/google/embeddinggemma-2) running on `cpu` with asymmetric query/document task instructions.
+- **NLI Engine Interface**: HuggingFace [`cross-encoder/nli-deberta-v3-base`](https://huggingface.co/cross-encoder/nli-deberta-v3-base) running on `cpu` mapped strictly by label name (`contradiction`, `entailment`, `neutral`).
 - **Vector Database**: `qdrant-client` local file-backed persistence.
 - **External Search**: `duckduckgo-search` asynchronous query client.
 

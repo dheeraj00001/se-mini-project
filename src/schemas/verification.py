@@ -1,7 +1,7 @@
 """Pydantic schemas for the verification pipeline and inter-module contracts."""
 
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -156,3 +156,52 @@ class VerificationResponse(BaseModel):
         ...,
         description="Finalized output text (original, rewritten, or redacted).",
     )
+
+
+# ---------------------------------------------------------------------------
+# NLI Model Specifications & Label Mapping (cross-encoder/nli-deberta-v3-base)
+# ---------------------------------------------------------------------------
+# Hugging Face official index ordering: 0=contradiction, 1=entailment, 2=neutral
+DEBERTA_NLI_LABEL_ORDER: tuple[str, ...] = ("contradiction", "entailment", "neutral")
+
+DEBERTA_TO_CLAIM_STATE: Dict[str, ClaimState] = {
+    "contradiction": ClaimState.CONTRADICTED,
+    "entailment": ClaimState.SUPPORTED,
+    "neutral": ClaimState.UNVERIFIED,
+}
+
+
+def map_nli_probabilities(
+    probs: Sequence[float],
+    label_order: Sequence[str] = DEBERTA_NLI_LABEL_ORDER,
+) -> Dict[str, float]:
+    """Map raw NLI model probability outputs to explicit label names.
+
+    Ensures that probabilities are mapped by their documented label names
+    rather than assuming an arbitrary index ordering.
+    """
+    if len(probs) != len(label_order):
+        raise ValueError(
+            f"Expected {len(label_order)} probabilities matching {label_order}, got {len(probs)}"
+        )
+    return {label: float(prob) for label, prob in zip(label_order, probs)}
+
+
+def determine_claim_state_from_nli(
+    probabilities: Dict[str, float],
+    threshold: float = 0.5,
+) -> ClaimState:
+    """Determine discrete ClaimState using verified label probabilities.
+
+    Args:
+        probabilities: Dict containing 'entailment', 'contradiction', and 'neutral'.
+        threshold: Minimum confidence required for decisive classification.
+    """
+    entailment = probabilities.get("entailment", 0.0)
+    contradiction = probabilities.get("contradiction", 0.0)
+
+    if contradiction >= threshold and contradiction > entailment:
+        return ClaimState.CONTRADICTED
+    if entailment >= threshold and entailment > contradiction:
+        return ClaimState.SUPPORTED
+    return ClaimState.UNVERIFIED

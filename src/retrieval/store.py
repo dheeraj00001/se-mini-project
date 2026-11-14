@@ -1,15 +1,17 @@
 """Synchronized dual-index persistence for Qdrant vector store and BM25 index.
 
-Implements REQ-RET-03 and ADR-0007:
+Implements REQ-RET-03, ADR-0002, and ADR-0007:
 - Local file-backed Qdrant vector database (default: ./data/qdrant_storage).
 - Disk-serialized BM25 index via joblib (default: ./data/bm25_index.joblib).
 - Shared deterministic SHA-256 chunk IDs.
 - Duplicate document skipping and persistence across restarts.
+- Automatic vector dimension migration (384 -> 768) and metadata persistence.
+- Asymmetric embedding pipeline (embed_documents for corpus, embed_query for search).
 """
 
 import uuid
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import joblib
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
@@ -35,6 +37,15 @@ class DualIndexStore:
         self._bm25_path = Path(bm25_path) if bm25_path else None
         self._embedder: BaseEmbedder = embedder if embedder is not None else get_default_embedder()
 
+        # In-memory indices & metadata cache
+        self._chunks: Dict[str, EvidenceChunk] = {}
+        self._doc_hashes: Dict[str, str] = {}
+        self._bm25: Optional[BM25Okapi] = None
+
+        # Load BM25 and chunk metadata if present on disk prior to vector sync
+        if not self._in_memory and self._bm25_path and self._bm25_path.is_file():
+            self._load_bm25()
+
         # Initialize Qdrant Client
         if self._in_memory or not qdrant_path:
             self._client = QdrantClient(":memory:")
@@ -45,18 +56,73 @@ class DualIndexStore:
 
         self._ensure_qdrant_collection()
 
-        # In-memory indices & metadata cache
-        self._chunks: Dict[str, EvidenceChunk] = {}
-        self._doc_hashes: Dict[str, str] = {}
-        self._bm25: Optional[BM25Okapi] = None
+    @property
+    def embedder(self) -> BaseEmbedder:
+        """Return the active dense embedder."""
+        return self._embedder
 
-        # Load BM25 and chunk metadata if present on disk
-        if not self._in_memory and self._bm25_path and self._bm25_path.is_file():
-            self._load_bm25()
+    @property
+    def collection_name(self) -> str:
+        """Return the Qdrant collection name."""
+        return self._collection_name
+
+    def get_collection_metadata(self) -> Dict[str, Any]:
+        """Retrieve stored collection metadata from Qdrant."""
+        try:
+            info = self._client.get_collection(collection_name=self._collection_name)
+            if hasattr(info, "config") and hasattr(info.config, "metadata"):
+                meta = info.config.metadata
+                if isinstance(meta, dict):
+                    return meta
+        except Exception:
+            pass
+        return {
+            "model_name": self._embedder.model_name,
+            "dimension": self._embedder.dimension,
+        }
 
     def _ensure_qdrant_collection(self) -> None:
-        """Create the Qdrant collection if it does not exist."""
+        """Create the Qdrant collection or recreate it if dimension differs."""
         collections = [c.name for c in self._client.get_collections().collections]
+        if self._collection_name in collections:
+            info = self._client.get_collection(collection_name=self._collection_name)
+            existing_size: Optional[int] = None
+            if hasattr(info, "config") and hasattr(info.config, "params"):
+                params = info.config.params
+                if hasattr(params, "vectors") and params.vectors:
+                    if hasattr(params.vectors, "size"):
+                        existing_size = params.vectors.size
+                    elif isinstance(params.vectors, dict) and "" in params.vectors:
+                        existing_size = params.vectors[""].size
+
+            if existing_size is not None and existing_size != self._embedder.dimension:
+                # Dimension mismatch (e.g., 384 from MiniLM vs 768 from EmbeddingGemma-2)
+                # On Windows local file Qdrant, close open SQLite handles before deletion
+                try:
+                    if hasattr(self._client, "_client") and hasattr(
+                        self._client._client, "collections"
+                    ):
+                        coll = self._client._client.collections.get(self._collection_name)
+                        if coll is not None and hasattr(coll, "close"):
+                            coll.close()
+                except Exception:
+                    pass
+
+                self._client.delete_collection(collection_name=self._collection_name)
+                self._client.create_collection(
+                    collection_name=self._collection_name,
+                    vectors_config=VectorParams(
+                        size=self._embedder.dimension,
+                        distance=Distance.COSINE,
+                    ),
+                    metadata={
+                        "model_name": self._embedder.model_name,
+                        "dimension": self._embedder.dimension,
+                    },
+                )
+                self._reembed_all_chunks()
+                return
+
         if self._collection_name not in collections:
             self._client.create_collection(
                 collection_name=self._collection_name,
@@ -64,7 +130,38 @@ class DualIndexStore:
                     size=self._embedder.dimension,
                     distance=Distance.COSINE,
                 ),
+                metadata={
+                    "model_name": self._embedder.model_name,
+                    "dimension": self._embedder.dimension,
+                },
             )
+            if self._chunks:
+                self._reembed_all_chunks()
+
+    def _reembed_all_chunks(self) -> None:
+        """Re-embed all cached chunks with current embedder and upsert to Qdrant."""
+        if not self._chunks:
+            return
+        chunk_list = list(self._chunks.values())
+        texts = [c.text for c in chunk_list]
+        vectors = self._embedder.embed_documents(texts)
+
+        points = []
+        for chunk, vec in zip(chunk_list, vectors):
+            point_id = str(uuid.uuid5(uuid.NAMESPACE_URL, chunk.chunk_id))
+            payload = {
+                "chunk_id": chunk.chunk_id,
+                "text": chunk.text,
+                "source_doc": chunk.source_doc,
+                "tier": chunk.tier,
+                "metadata": chunk.metadata,
+            }
+            points.append(PointStruct(id=point_id, vector=vec, payload=payload))
+
+        self._client.upsert(
+            collection_name=self._collection_name,
+            points=points,
+        )
 
     def _load_bm25(self) -> None:
         """Load serialized BM25 index and chunk state from disk."""
@@ -126,9 +223,9 @@ class DualIndexStore:
                 self._save_bm25()
             return 0
 
-        # 1. Dense Embedding Generation & Qdrant Upsert
+        # 1. Dense Embedding Generation (using asymmetric document embedding)
         texts = [c.text for c in new_chunks]
-        vectors = self._embedder.embed(texts)
+        vectors = self._embedder.embed_documents(texts)
 
         points = []
         for chunk, vec in zip(new_chunks, vectors):
@@ -163,6 +260,31 @@ class DualIndexStore:
         self._save_bm25()
 
         return len(new_chunks)
+
+    def search_dense(self, query: str, limit: int = 10) -> List[Tuple[EvidenceChunk, float]]:
+        """Search Qdrant using asymmetric query embedding.
+
+        Returns a list of (EvidenceChunk, cosine_similarity_score) pairs.
+        """
+        if not self._chunks:
+            return []
+
+        query_vec = self._embedder.embed_query(query)
+        response = self._client.query_points(
+            collection_name=self._collection_name,
+            query=query_vec,
+            limit=limit,
+        )
+
+        results: List[Tuple[EvidenceChunk, float]] = []
+        for point in response.points:
+            chunk_id = point.payload.get("chunk_id") if point.payload else None
+            if chunk_id and chunk_id in self._chunks:
+                chunk = self._chunks[chunk_id]
+                score = float(point.score) if point.score is not None else 0.0
+                results.append((chunk, score))
+
+        return results
 
     def get_chunk(self, chunk_id: str) -> Optional[EvidenceChunk]:
         """Retrieve an EvidenceChunk by its SHA-256 chunk ID."""

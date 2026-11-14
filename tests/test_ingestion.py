@@ -589,7 +589,10 @@ def test_embeddinggemma_embedder_abstractions() -> None:
     """Verify EmbeddingGemmaEmbedder metadata, factory, and empty input handling."""
     embedder = EmbeddingGemmaEmbedder(dimension=768)
     assert embedder.dimension == 768
+    assert embedder.model_name == "google/embeddinggemma-2"
     assert embedder.embed([]) == []
+    assert embedder.embed_documents([]) == []
+    assert embedder.embed_queries([]) == []
 
     default_gemma = get_default_embedder("google/embeddinggemma-2")
     assert isinstance(default_gemma, EmbeddingGemmaEmbedder)
@@ -599,3 +602,126 @@ def test_embeddinggemma_embedder_abstractions() -> None:
     assert isinstance(minilm, FastEmbedEmbedder)
     assert minilm.dimension == 384
     assert minilm.embed([]) == []
+    assert minilm.embed_documents([]) == []
+    assert minilm.embed_queries([]) == []
+
+
+def test_embedder_asymmetric_query_document_encoding() -> None:
+    """Verify that MockEmbedder produces asymmetric vectors for queries vs documents."""
+    mock = MockEmbedder(dimension=768)
+    doc_vec = mock.embed_documents(["quantum computing"])[0]
+    query_vec = mock.embed_query("quantum computing")
+    assert len(doc_vec) == 768
+    assert len(query_vec) == 768
+    # Asymmetric encoding must produce different embeddings for retrieval separation
+    assert doc_vec != query_vec
+
+
+def test_store_dimension_migration_384_to_768(tmp_path: Path) -> None:
+    """Verify ADR-0002 migration: 384-dim Qdrant store migrates automatically to 768-dim."""
+    q_dir = tmp_path / "qdrant_migrate"
+    b_file = tmp_path / "bm25_migrate.joblib"
+
+    # Step 1: Initialize store with 384-dim mock embedder and insert chunks
+    store_384 = DualIndexStore(
+        qdrant_path=str(q_dir),
+        bm25_path=str(b_file),
+        collection_name="test_migration",
+        embedder=MockEmbedder(dimension=384, model_name="legacy-minilm"),
+    )
+    chunk = EvidenceChunk(
+        chunk_id="chunk-mig-01",
+        text="Solar energy capacity expanded rapidly in 2024.",
+        source_doc="doc_solar.txt",
+        tier=2,
+    )
+    store_384.add_chunks([chunk])
+    assert store_384.count() == 1
+    meta_384 = store_384.get_collection_metadata()
+    assert meta_384.get("dimension") == 384
+    store_384.close()
+
+    # Step 2: Open store on the same directory with 768-dim EmbeddingGemma embedder
+    store_768 = DualIndexStore(
+        qdrant_path=str(q_dir),
+        bm25_path=str(b_file),
+        collection_name="test_migration",
+        embedder=MockEmbedder(dimension=768, model_name="google/embeddinggemma-2"),
+    )
+    # The collection should automatically detect dimension mismatch, recreate at 768, and re-embed
+    assert store_768.count() == 1
+    meta_768 = store_768.get_collection_metadata()
+    assert meta_768.get("dimension") == 768
+    assert meta_768.get("model_name") == "google/embeddinggemma-2"
+
+    # Verify dense search functions on the migrated 768-dim collection
+    results = store_768.search_dense("solar energy expansion", limit=5)
+    assert len(results) == 1
+    retrieved_chunk, score = results[0]
+    assert retrieved_chunk.chunk_id == "chunk-mig-01"
+    assert isinstance(score, float)
+    store_768.close()
+
+
+def test_deberta_nli_label_mapping() -> None:
+    """Verify DeBERTa-v3-base label mapping follows documented order."""
+    from src.schemas.verification import (
+        DEBERTA_NLI_LABEL_ORDER,
+        DEBERTA_TO_CLAIM_STATE,
+        ClaimState,
+        determine_claim_state_from_nli,
+        map_nli_probabilities,
+    )
+
+    assert DEBERTA_NLI_LABEL_ORDER == ("contradiction", "entailment", "neutral")
+    assert DEBERTA_TO_CLAIM_STATE["contradiction"] == ClaimState.CONTRADICTED
+    assert DEBERTA_TO_CLAIM_STATE["entailment"] == ClaimState.SUPPORTED
+    assert DEBERTA_TO_CLAIM_STATE["neutral"] == ClaimState.UNVERIFIED
+
+    # Raw logits/probabilities from model: [0.05, 0.90, 0.05]
+    # Index 0 is contradiction (0.05), Index 1 is entailment (0.90), Index 2 is neutral (0.05)
+    probs = map_nli_probabilities([0.05, 0.90, 0.05])
+    assert probs["contradiction"] == 0.05
+    assert probs["entailment"] == 0.90
+    assert probs["neutral"] == 0.05
+    assert determine_claim_state_from_nli(probs) == ClaimState.SUPPORTED
+
+    # Contradiction dominant: Index 0 is high
+    contra_probs = map_nli_probabilities([0.88, 0.08, 0.04])
+    assert determine_claim_state_from_nli(contra_probs) == ClaimState.CONTRADICTED
+
+    # Neutral dominant: Index 2 is high
+    neutral_probs = map_nli_probabilities([0.10, 0.10, 0.80])
+    assert determine_claim_state_from_nli(neutral_probs) == ClaimState.UNVERIFIED
+
+    # Length mismatch raises ValueError
+    with pytest.raises(ValueError):
+        map_nli_probabilities([0.5, 0.5])
+
+
+def test_embeddinggemma_mock_dispatch_methods() -> None:
+    """Verify EmbeddingGemmaEmbedder correctly invokes model methods or fallbacks."""
+
+    class FakeModelWithMethods:
+        def encode_document(self, texts: list[str], **kwargs: object) -> list[list[float]]:
+            return [[0.1] * 10 for _ in texts]
+
+        def encode_query(self, queries: list[str], **kwargs: object) -> list[list[float]]:
+            return [[0.9] * 10 for _ in queries]
+
+    embedder = EmbeddingGemmaEmbedder(dimension=10)
+    embedder._model = FakeModelWithMethods()
+
+    docs = embedder.embed_documents(["doc text"])
+    assert len(docs) == 1
+    assert len(docs[0]) == 10
+    assert docs[0][0] == 0.1
+
+    queries = embedder.embed_queries(["query text"])
+    assert len(queries) == 1
+    assert len(queries[0]) == 10
+    assert queries[0][0] == 0.9
+
+    single = embedder.embed_query("single query text")
+    assert len(single) == 10
+    assert single[0] == 0.9

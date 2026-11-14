@@ -6,10 +6,14 @@ from src.schemas.verification import (
     ClaimReport,
     ClaimSegment,
     ClaimState,
+    DEBERTA_NLI_LABEL_ORDER,
+    DEBERTA_TO_CLAIM_STATE,
     EvidenceChunk,
     MitigationMode,
     VerificationRequest,
     VerificationResponse,
+    determine_claim_state_from_nli,
+    map_nli_probabilities,
 )
 
 __all__ = [
@@ -17,10 +21,14 @@ __all__ = [
     "ClaimReport",
     "ClaimSegment",
     "ClaimState",
+    "DEBERTA_NLI_LABEL_ORDER",
+    "DEBERTA_TO_CLAIM_STATE",
     "EvidenceChunk",
     "IngestionResult",
     "KnowledgeIngestRequest",
     "MitigationMode",
     "VerificationRequest",
     "VerificationResponse",
+    "determine_claim_state_from_nli",
+    "map_nli_probabilities",
 ]

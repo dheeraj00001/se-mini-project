@@ -17,15 +17,15 @@ The programmatic endpoint allowing client applications to submit pre-generated t
 _Avoid_: Scorer, Analyzer
 
 **Local Generator**:
-The GPU-hosted local Large Language Model (`google/gemma-4-E4B` quantized) responsible for primary text generation and rewrite mitigations.
+The GPU-hosted local Large Language Model (`google/gemma-4-E4B-it-qat-mobile-transformers` using `wNa8o8` QAT mobile quantization with targeted 2-bit decoding layers, targeting $\le 2.5\text{ GB}$ VRAM) responsible for primary text generation and rewrite mitigations.
 _Avoid_: Remote LLM, Cloud model
 
 **NLI Cross-Encoder**:
-A natural language inference model (`cross-encoder/nli-deberta-v3-base`) executing on CPU that evaluates premise-hypothesis pairs to assign entailment, neutral, or contradiction probabilities.
+A natural language inference model (`cross-encoder/nli-deberta-v3-base` with label mapping index `[0: contradiction, 1: entailment, 2: neutral]`) executing on CPU that evaluates premise-hypothesis pairs to assign entailment, neutral, or contradiction probabilities.
 _Avoid_: LLM Judge, Semantic similarity scorer
 
 **Dense Embedder**:
-The embedding model (`google/embeddinggemma-2`) executing on CPU to generate semantic vector representations for hybrid retrieval in Qdrant.
+The embedding model (`google/embeddinggemma-2`) executing on CPU to generate 768-dimensional semantic vector representations for hybrid retrieval in Qdrant using asymmetric task instruction prefixes (`encode_query` vs `encode_document`).
 _Avoid_: Sparse encoder, Tokenizer
 
 **Split Compute Strategy**:
