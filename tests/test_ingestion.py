@@ -19,7 +19,12 @@ from pypdf import PdfWriter
 
 from src.gateway.app import create_app
 from src.retrieval.chunker import chunk_text
-from src.retrieval.embedder import MockEmbedder
+from src.retrieval.embedder import (
+    EmbeddingGemmaEmbedder,
+    FastEmbedEmbedder,
+    MockEmbedder,
+    get_default_embedder,
+)
 from src.retrieval.ingest import IngestionPipeline
 from src.retrieval.parser import (
     compute_content_hash,
@@ -578,3 +583,19 @@ def test_api_knowledge_ingest_invalid_file_and_format(
     )
     assert resp_bad_ext.status_code == 400
     assert "Unsupported document format" in resp_bad_ext.json()["detail"]
+
+
+def test_embeddinggemma_embedder_abstractions() -> None:
+    """Verify EmbeddingGemmaEmbedder metadata, factory, and empty input handling."""
+    embedder = EmbeddingGemmaEmbedder(dimension=768)
+    assert embedder.dimension == 768
+    assert embedder.embed([]) == []
+
+    default_gemma = get_default_embedder("google/embeddinggemma-2")
+    assert isinstance(default_gemma, EmbeddingGemmaEmbedder)
+    assert default_gemma.dimension == 768
+
+    minilm = get_default_embedder("sentence-transformers/all-MiniLM-L6-v2", dimension=384)
+    assert isinstance(minilm, FastEmbedEmbedder)
+    assert minilm.dimension == 384
+    assert minilm.embed([]) == []

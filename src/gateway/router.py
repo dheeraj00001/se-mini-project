@@ -146,7 +146,7 @@ async def chat_completions_stub(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "id": "chatcmpl-stub-001",
         "object": "chat.completion",
-        "model": payload.get("model", "gemma-4b"),
+        "model": payload.get("model", "google/gemma-4-E4B"),
         "choices": [
             {
                 "index": 0,

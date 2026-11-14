@@ -128,8 +128,8 @@ The system is an autonomous, dual-mode add-on service. It can be deployed as an 
 - **Software Dependencies**: Python 3.11, CUDA 12.x / 13.x, PyTorch 2.2+, Transformers 4.40+, Qdrant-Client 1.9+, FastAPI 0.111+.
 
 ### 2.5 Design and Implementation Constraints
-- **VRAM Constraint (CON-01)**: Generator LLM (Gemma 4B) must operate within 4 GB VRAM via INT4/4-bit quantization.
-- **Split-Compute Constraint (CON-02)**: Dense embeddings and NLI cross-encoders must execute on host CPU threads to avoid GPU OOM crashes (ADR-0002).
+- **VRAM Constraint (CON-01)**: Generator LLM ([`google/gemma-4-E4B`](https://huggingface.co/google/gemma-4-E4B)) must operate within 4 GB VRAM via INT4/4-bit quantization on `cuda:0`.
+- **Split-Compute Constraint (CON-02)**: Dense embeddings ([`google/embeddinggemma-2`](https://huggingface.co/google/embeddinggemma-2)) and NLI cross-encoders ([`cross-encoder/nli-deberta-v3-base`](https://huggingface.co/cross-encoder/nli-deberta-v3-base)) must execute on host CPU threads to avoid GPU OOM crashes (ADR-0002).
 - **Air-Gap Constraint (CON-03)**: Tier 3 external search is strictly opt-in; the server enforces an unbypassable ceiling (`SERVER_MAX_TIER`).
 - **Buffering Constraint (CON-04)**: Streaming requests must be buffered in full prior to emitting synthetic SSE chunks to prevent unverified token leakage.
 
@@ -147,8 +147,9 @@ The system is an autonomous, dual-mode add-on service. It can be deployed as an 
 
 ### 3.2 Software Interfaces
 - **OpenAI Client SDK Compatibility**: Emulates `/v1/chat/completions` API schema supporting standard `messages`, `temperature`, `model`, and `stream` parameters.
-- **Local Gemma Generator Interface**: HuggingFace `transformers` pipeline executing 4-bit quantized Gemma inference on `cuda:0`.
-- **NLI Engine Interface**: HuggingFace `cross-encoder/nli-deberta-v3-base` running on `cpu`.
+- **Local Gemma Generator Interface**: HuggingFace `transformers` pipeline executing 4-bit quantized [`google/gemma-4-E4B`](https://huggingface.co/google/gemma-4-E4B) on `cuda:0`.
+- **Dense Embedder Interface**: HuggingFace [`google/embeddinggemma-2`](https://huggingface.co/google/embeddinggemma-2) running on `cpu`.
+- **NLI Engine Interface**: HuggingFace [`cross-encoder/nli-deberta-v3-base`](https://huggingface.co/cross-encoder/nli-deberta-v3-base) running on `cpu`.
 - **Vector Database**: `qdrant-client` local file-backed persistence.
 - **External Search**: `duckduckgo-search` asynchronous query client.
 

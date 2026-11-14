@@ -63,7 +63,7 @@ def test_ut_gw_01_main_app_instance() -> None:
 def test_ut_gw_01_chat_completions_proxy_stub(client: TestClient) -> None:
     """UT_GW_01: Verify POST /v1/chat/completions proxy stub responds cleanly."""
     payload = {
-        "model": "gemma-4b",
+        "model": "google/gemma-4-E4B",
         "messages": [{"role": "user", "content": "Hello"}],
     }
     response = client.post("/v1/chat/completions", json=payload)

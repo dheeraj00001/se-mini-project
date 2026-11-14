@@ -15,7 +15,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from rank_bm25 import BM25Okapi
 
-from src.retrieval.embedder import BaseEmbedder, FastEmbedEmbedder
+from src.retrieval.embedder import BaseEmbedder, get_default_embedder
 from src.schemas.verification import EvidenceChunk
 
 
@@ -33,7 +33,7 @@ class DualIndexStore:
         self._in_memory = in_memory
         self._collection_name = collection_name
         self._bm25_path = Path(bm25_path) if bm25_path else None
-        self._embedder: BaseEmbedder = embedder if embedder is not None else FastEmbedEmbedder()
+        self._embedder: BaseEmbedder = embedder if embedder is not None else get_default_embedder()
 
         # Initialize Qdrant Client
         if self._in_memory or not qdrant_path:
