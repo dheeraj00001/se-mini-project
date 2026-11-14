@@ -14,7 +14,9 @@ from src.gateway.app import create_app
 from src.main import app as main_app
 from src.schemas.verification import (
     ClaimReport,
+    ClaimSegment,
     ClaimState,
+    EvidenceChunk,
     MitigationMode,
     VerificationRequest,
     VerificationResponse,
@@ -141,6 +143,45 @@ def test_ut_gw_02_verification_response_serialization() -> None:
     data = res.model_dump()
     assert data["is_safe"] is True
     assert data["claims"][0]["state"] == "SUPPORTED"
+
+
+def test_ut_gw_02_claim_segment_contract() -> None:
+    """UT_GW_02: Verify Student 2 ClaimSegment schema contract."""
+    segment = ClaimSegment(
+        claim_id=0,
+        claim_text="The Eiffel Tower is in Paris.",
+        original_sentence="I think the Eiffel Tower is in Paris.",
+        has_epistemic_hedge=True,
+    )
+    assert segment.claim_id == 0
+    assert segment.claim_text == "The Eiffel Tower is in Paris."
+    assert segment.has_epistemic_hedge is True
+
+    with pytest.raises(ValidationError):
+        ClaimSegment(claim_id=-1, claim_text="Invalid", original_sentence="Invalid")
+
+
+def test_ut_gw_02_evidence_chunk_contract() -> None:
+    """UT_GW_02: Verify Student 3 EvidenceChunk schema contract."""
+    chunk = EvidenceChunk(
+        chunk_id="a1b2c3d4e5f678901234567890abcdef1234567890abcdef1234567890abcdef",
+        text="Paris is the capital of France.",
+        source_doc="geography_handbook.pdf",
+        tier=2,
+        score=0.88,
+        metadata={"author": "PES"},
+    )
+    assert chunk.tier == 2
+    assert chunk.score == 0.88
+    assert chunk.metadata["author"] == "PES"
+
+    with pytest.raises(ValidationError):
+        EvidenceChunk(
+            chunk_id="bad",
+            text="text",
+            source_doc="doc",
+            tier=4,  # tier must be <= 3
+        )
 
 
 def test_ut_gw_02_verify_endpoint_success_stub(client: TestClient) -> None:

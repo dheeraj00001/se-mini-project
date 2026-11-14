@@ -2,7 +2,9 @@
 
 from src.schemas.verification import (
     ClaimReport,
+    ClaimSegment,
     ClaimState,
+    EvidenceChunk,
     MitigationMode,
     VerificationRequest,
     VerificationResponse,
@@ -10,7 +12,9 @@ from src.schemas.verification import (
 
 __all__ = [
     "ClaimReport",
+    "ClaimSegment",
     "ClaimState",
+    "EvidenceChunk",
     "MitigationMode",
     "VerificationRequest",
     "VerificationResponse",

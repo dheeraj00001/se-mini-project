@@ -1,7 +1,7 @@
-"""Pydantic schemas for the verification pipeline."""
+"""Pydantic schemas for the verification pipeline and inter-module contracts."""
 
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -20,6 +20,43 @@ class MitigationMode(str, Enum):
     REWRITE = "rewrite"
     REDACT = "redact"
     BLOCK = "block"
+
+
+class ClaimSegment(BaseModel):
+    """Atomic factual proposition extracted from text (Module 2 / Student 2 contract)."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    claim_id: int = Field(..., ge=0, description="Sequential index of the atomic claim.")
+    claim_text: str = Field(
+        ..., min_length=1, description="Standalone atomic hypothesis proposition."
+    )
+    original_sentence: str = Field(
+        ..., min_length=1, description="Source sentence containing the claim."
+    )
+    has_epistemic_hedge: bool = Field(
+        default=False,
+        description="True if extracted from under an epistemic hedge (e.g. 'I think').",
+    )
+
+
+class EvidenceChunk(BaseModel):
+    """Retrieved grounding knowledge chunk (Module 3 / Student 3 contract)."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    chunk_id: str = Field(..., min_length=1, description="Deterministic SHA-256 hash ID.")
+    text: str = Field(..., min_length=1, description="Chunk text passage.")
+    source_doc: str = Field(..., min_length=1, description="Source document identifier or path.")
+    tier: int = Field(..., ge=1, le=3, description="Grounding tier (1=Context, 2=Local KB, 3=Web).")
+    score: Optional[float] = Field(
+        default=None,
+        description="Reciprocal rank fusion or similarity score.",
+    )
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Passage or document metadata.",
+    )
 
 
 class ClaimReport(BaseModel):
