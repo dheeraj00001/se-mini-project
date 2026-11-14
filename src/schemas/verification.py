@@ -153,13 +153,17 @@ class VerificationResponse(BaseModel):
         description="Percentage of claims classified as UNVERIFIED.",
     )
     claims: List[ClaimReport] = Field(
-        ...,
+        default_factory=list,
         description="Detailed list of individual claim evaluations.",
     )
     sanitized_text: str = Field(
-        ...,
+        default="",
         description="Finalized output text (original, rewritten, or redacted).",
     )
+
+
+# Domain alias as defined in SRS and Ticket 05 backlog
+VerificationReport = VerificationResponse
 
 
 # ---------------------------------------------------------------------------
@@ -193,19 +197,29 @@ def map_nli_probabilities(
 
 def determine_claim_state_from_nli(
     probabilities: Dict[str, float],
-    threshold: float = 0.5,
+    threshold: Optional[float] = None,
+    entailment_threshold: float = 0.70,
+    contradiction_threshold: float = 0.70,
 ) -> ClaimState:
     """Determine discrete ClaimState using verified label probabilities.
 
+    Implements REQ-VER-04, ADR-0005.
+
     Args:
         probabilities: Dict containing 'entailment', 'contradiction', and 'neutral'.
-        threshold: Minimum confidence required for decisive classification.
+        threshold: Optional backward-compatible single threshold override.
+        entailment_threshold: Calibrated minimum confidence for SUPPORTED (default 0.70).
+        contradiction_threshold: Calibrated minimum confidence for CONTRADICTED (default 0.70).
     """
+    if threshold is not None:
+        entailment_threshold = threshold
+        contradiction_threshold = threshold
+
     entailment = probabilities.get("entailment", 0.0)
     contradiction = probabilities.get("contradiction", 0.0)
 
-    if contradiction >= threshold and contradiction > entailment:
+    if contradiction >= contradiction_threshold and contradiction > entailment:
         return ClaimState.CONTRADICTED
-    if entailment >= threshold and entailment > contradiction:
+    if entailment >= entailment_threshold and entailment > contradiction:
         return ClaimState.SUPPORTED
     return ClaimState.UNVERIFIED
