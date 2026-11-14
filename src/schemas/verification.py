@@ -63,6 +63,10 @@ class EvidenceChunk(BaseModel):
     )
 
 
+# Domain alias as defined in SRS and Ticket 04
+EvidenceCandidate = EvidenceChunk
+
+
 class ClaimReport(BaseModel):
     """Individual claim evaluation report (SRS Appendix B.3)."""
 

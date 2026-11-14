@@ -286,6 +286,36 @@ class DualIndexStore:
 
         return results
 
+    def search_sparse(self, query: str, limit: int = 10) -> List[Tuple[EvidenceChunk, float]]:
+        """Search BM25 sparse index with exact keyword token matching.
+
+        Returns a list of (EvidenceChunk, bm25_score) pairs sorted descending by score.
+        """
+        if not self._chunks or self._bm25 is None:
+            return []
+
+        cleaned_query = query.strip()
+        if not cleaned_query:
+            return []
+
+        tokenized_query = cleaned_query.lower().split()
+        if not tokenized_query:
+            return []
+
+        scores = self._bm25.get_scores(tokenized_query)
+        chunk_list = list(self._chunks.values())
+        query_words = set(tokenized_query)
+        scored_chunks = []
+        for chunk, score in zip(chunk_list, scores):
+            overlap = query_words.intersection(chunk.text.lower().split())
+            if score > 0.0 or overlap:
+                eff_score = float(score) if score > 0.0 else float(len(overlap))
+                scored_chunks.append((chunk, eff_score))
+
+        # Sort descending by score, tie-break by chunk_id
+        scored_chunks.sort(key=lambda item: (-item[1], item[0].chunk_id))
+        return scored_chunks[:limit]
+
     def get_chunk(self, chunk_id: str) -> Optional[EvidenceChunk]:
         """Retrieve an EvidenceChunk by its SHA-256 chunk ID."""
         return self._chunks.get(chunk_id)
