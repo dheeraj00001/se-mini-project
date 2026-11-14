@@ -23,7 +23,7 @@ class MitigationMode(str, Enum):
 
 
 class ClaimReport(BaseModel):
-    """Individual claim evaluation report."""
+    """Individual claim evaluation report (SRS Appendix B.3)."""
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
@@ -47,7 +47,7 @@ class ClaimReport(BaseModel):
 
 
 class VerificationRequest(BaseModel):
-    """Payload schema for POST /verify endpoint."""
+    """Payload schema for POST /verify endpoint (SRS Appendix B.1)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -73,11 +73,11 @@ class VerificationRequest(BaseModel):
     def text_must_not_be_blank(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("text must not be empty or whitespace only")
-        return v.strip()
+        return v
 
 
 class VerificationResponse(BaseModel):
-    """Response schema for verification endpoints."""
+    """Response schema for verification endpoints (SRS Appendix B.2)."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -108,7 +108,7 @@ class VerificationResponse(BaseModel):
         description="Percentage of claims classified as UNVERIFIED.",
     )
     claims: List[ClaimReport] = Field(
-        default_factory=list,
+        ...,
         description="Detailed list of individual claim evaluations.",
     )
     sanitized_text: str = Field(

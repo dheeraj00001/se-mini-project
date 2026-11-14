@@ -1,3 +1,11 @@
+"""Unit tests for the Core Gateway scaffolding and verification endpoint.
+
+Covers:
+- UT_GW_01: Application initialization, health check, CORS, and proxy stub (REQ-GW-01).
+- UT_GW_02: POST /verify endpoint and Pydantic V2 schema validation (REQ-GW-02).
+"""
+
+from typing import Generator
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
@@ -13,16 +21,88 @@ from src.schemas.verification import (
 )
 
 
-def test_verification_request_defaults_and_validation() -> None:
-    req = VerificationRequest(text="The sky is blue.")
-    assert req.text == "The sky is blue."
+@pytest.fixture
+def client() -> Generator[TestClient, None, None]:
+    """Fixture providing a reusable FastAPI test client."""
+    app = create_app()
+    with TestClient(app) as test_client:
+        yield test_client
+
+
+# ============================================================================
+# UT_GW_01: Gateway Application, Health Check, CORS & Scaffolding
+# ============================================================================
+
+
+def test_ut_gw_01_health_check_endpoint(client: TestClient) -> None:
+    """UT_GW_01: Verify GET /health responds with 200 and version metadata."""
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy", "version": "1.0.0"}
+    assert "X-Process-Time-Ms" in response.headers
+
+
+def test_ut_gw_01_cors_and_logging_middleware(client: TestClient) -> None:
+    """UT_GW_01: Verify CORS wildcard headers and logging timing headers."""
+    response = client.get("/health", headers={"Origin": "http://client.example.com"})
+    assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == "*"
+    assert "X-Process-Time-Ms" in response.headers
+
+
+def test_ut_gw_01_main_app_instance() -> None:
+    """UT_GW_01: Verify src.main:app executes as a valid FastAPI instance."""
+    with TestClient(main_app) as main_client:
+        response = main_client.get("/health")
+        assert response.status_code == 200
+        assert response.json() == {"status": "healthy", "version": "1.0.0"}
+
+
+def test_ut_gw_01_chat_completions_proxy_stub(client: TestClient) -> None:
+    """UT_GW_01: Verify POST /v1/chat/completions proxy stub responds cleanly."""
+    payload = {
+        "model": "gemma-4b",
+        "messages": [{"role": "user", "content": "Hello"}],
+    }
+    response = client.post("/v1/chat/completions", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["object"] == "chat.completion"
+    assert data["choices"][0]["message"]["content"] == "Dehallucination proxy initialized."
+
+
+def test_ut_gw_01_global_exception_handler() -> None:
+    """UT_GW_01: Verify global exception handler catches unhandled errors with 500."""
+    app = create_app()
+
+    @app.get("/trigger-error")
+    def _error_route() -> None:
+        raise RuntimeError("Unexpected failure")
+
+    with TestClient(app, raise_server_exceptions=False) as client:
+        response = client.get("/trigger-error")
+        assert response.status_code == 500
+        assert response.json()["error"] == "Internal Server Error"
+
+
+# ============================================================================
+# UT_GW_02: Verification Endpoint & Strict Schema Validation
+# ============================================================================
+
+
+def test_ut_gw_02_verification_request_defaults_and_immutability() -> None:
+    """UT_GW_02: Verify schema defaults and ensure text is not mutated."""
+    text_content = "  The sky is blue.  "
+    req = VerificationRequest(text=text_content)
+    assert req.text == text_content  # text is validated without in-place mutation
     assert req.prompt == ""
     assert req.context_documents == []
     assert req.max_retrieval_tier == 2
     assert req.mitigation_mode == MitigationMode.FLAG
 
 
-def test_verification_request_invalid_tier() -> None:
+def test_ut_gw_02_verification_request_invalid_tier() -> None:
+    """UT_GW_02: Verify rejection of retrieval tiers outside 1..3."""
     with pytest.raises(ValidationError):
         VerificationRequest(text="Valid text", max_retrieval_tier=4)
 
@@ -30,7 +110,8 @@ def test_verification_request_invalid_tier() -> None:
         VerificationRequest(text="Valid text", max_retrieval_tier=0)
 
 
-def test_verification_request_empty_text() -> None:
+def test_ut_gw_02_verification_request_empty_text() -> None:
+    """UT_GW_02: Verify rejection of empty or whitespace-only text."""
     with pytest.raises(ValidationError):
         VerificationRequest(text="")
 
@@ -38,7 +119,8 @@ def test_verification_request_empty_text() -> None:
         VerificationRequest(text="   ")
 
 
-def test_verification_response_serialization() -> None:
+def test_ut_gw_02_verification_response_serialization() -> None:
+    """UT_GW_02: Verify response schema serialization with mandatory claims."""
     claim = ClaimReport(
         claim_id=1,
         claim_text="The sky is blue.",
@@ -61,17 +143,8 @@ def test_verification_response_serialization() -> None:
     assert data["claims"][0]["state"] == "SUPPORTED"
 
 
-def test_health_check_endpoint() -> None:
-    app = create_app()
-    client = TestClient(app)
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert response.json() == {"status": "healthy", "version": "1.0.0"}
-
-
-def test_verify_endpoint_success_stub() -> None:
-    app = create_app()
-    client = TestClient(app)
+def test_ut_gw_02_verify_endpoint_success_stub(client: TestClient) -> None:
+    """UT_GW_02: Verify POST /verify returns schema-compliant response stub."""
     payload = {"text": "The Eiffel Tower is in Paris."}
     response = client.post("/verify", json=payload)
     assert response.status_code == 200
@@ -85,9 +158,8 @@ def test_verify_endpoint_success_stub() -> None:
     assert data["sanitized_text"] == "The Eiffel Tower is in Paris."
 
 
-def test_verify_endpoint_with_all_fields() -> None:
-    app = create_app()
-    client = TestClient(app)
+def test_ut_gw_02_verify_endpoint_with_all_fields(client: TestClient) -> None:
+    """UT_GW_02: Verify POST /verify with full optional parameter set."""
     payload = {
         "text": "Sample text to verify.",
         "prompt": "What is this?",
@@ -101,52 +173,41 @@ def test_verify_endpoint_with_all_fields() -> None:
     assert data["sanitized_text"] == "Sample text to verify."
 
 
-def test_verify_endpoint_out_of_range_tier() -> None:
-    app = create_app()
-    client = TestClient(app)
-    # Tier > 3
+def test_ut_gw_02_verify_endpoint_out_of_range_tier(client: TestClient) -> None:
+    """UT_GW_02: Verify HTTP 422 on max_retrieval_tier > 3 or < 1."""
     res_high = client.post("/verify", json={"text": "Test", "max_retrieval_tier": 4})
     assert res_high.status_code == 422
+    assert "error" in res_high.json()
 
-    # Tier < 1
     res_low = client.post("/verify", json={"text": "Test", "max_retrieval_tier": 0})
     assert res_low.status_code == 422
+    assert "error" in res_low.json()
 
 
-def test_verify_endpoint_missing_and_blank_text() -> None:
-    app = create_app()
-    client = TestClient(app)
-    # Missing text
+def test_ut_gw_02_verify_endpoint_missing_and_blank_text(client: TestClient) -> None:
+    """UT_GW_02: Verify HTTP 422 on missing or empty text."""
     res_missing = client.post("/verify", json={})
     assert res_missing.status_code == 422
+    assert "error" in res_missing.json()
 
-    # Blank text
     res_blank = client.post("/verify", json={"text": "   "})
     assert res_blank.status_code == 422
+    assert "error" in res_blank.json()
 
 
-def test_verify_endpoint_invalid_mitigation_mode() -> None:
-    app = create_app()
-    client = TestClient(app)
+def test_ut_gw_02_verify_endpoint_invalid_mitigation_mode(client: TestClient) -> None:
+    """UT_GW_02: Verify HTTP 422 on invalid mitigation_mode."""
     res = client.post("/verify", json={"text": "Test", "mitigation_mode": "invalid_mode"})
     assert res.status_code == 422
+    assert "error" in res.json()
 
 
-def test_verify_endpoint_malformed_json() -> None:
-    app = create_app()
-    client = TestClient(app)
+def test_ut_gw_02_verify_endpoint_malformed_json(client: TestClient) -> None:
+    """UT_GW_02: Verify HTTP 422 on malformed JSON payload."""
     res = client.post(
         "/verify",
         content="not a valid json string {",
         headers={"Content-Type": "application/json"},
     )
     assert res.status_code == 422
-
-
-def test_main_app_and_cors_middleware() -> None:
-    client = TestClient(main_app)
-    # Test GET through main_app with Origin header
-    response = client.get("/health", headers={"Origin": "http://example.com"})
-    assert response.status_code == 200
-    assert response.headers.get("access-control-allow-origin") == "http://example.com"
-    assert response.headers.get("access-control-allow-credentials") == "true"
+    assert "error" in res.json()
