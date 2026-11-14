@@ -27,8 +27,8 @@ Story points represent relative complexity based on Fibonacci sizing ($1, 2, 3, 
 
 | Ticket ID | Ticket Title | Owner | Story Points | Dependencies | SRS Reference | Priority |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| [**01**](./sprint-1/01-gateway-scaffolding-and-ci.md) | Core Gateway Scaffolding, Verification Endpoint & CI Pipeline | Student 1 | 3 SP | None | REQ-GW-01, REQ-GW-02 | High |
-| [**02**](./sprint-1/02-claim-segmenter.md) | Deterministic Sentence & Clause Claim Segmenter | Student 2 | 3 SP | None | REQ-VER-01, REQ-VER-02, REQ-VER-03 | High |
+| [**01**](./sprint-1/01-gateway-scaffolding-and-ci.md) | Core Gateway Scaffolding, Verification Endpoint & CI Pipeline | Student 1 | 3 SP | None | REQ-GW-01, REQ-GW-02 | High (Done) |
+| [**02**](./sprint-1/02-claim-segmenter.md) | Deterministic Sentence & Clause Claim Segmenter | Student 2 | 3 SP | None | REQ-VER-01, REQ-VER-02, REQ-VER-03 | High (Done) |
 | [**03**](./sprint-1/03-hybrid-ingestion.md) | Hybrid Knowledge Ingestion & Deterministic Dual-Index Store | Student 3 | 5 SP | None | REQ-RET-01, REQ-RET-02, REQ-RET-03 | High |
 | [**04**](./sprint-1/04-hybrid-retrieval-adapters.md) | Hybrid Retrieval Adapters & Reciprocal Rank Fusion (Tiers 1 & 2) | Student 3 | 5 SP | Ticket 03 | REQ-RET-04, REQ-RET-05 | High |
 | [**05**](./sprint-1/05-nli-verification.md) | CPU-Based DeBERTa-v3 NLI Verification & Reliability Scoring | Student 2 | 5 SP | Ticket 02, Ticket 04 | REQ-VER-04, REQ-VER-05, REQ-VER-06 | High |

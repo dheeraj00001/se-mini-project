@@ -40,6 +40,10 @@ class ClaimSegment(BaseModel):
     )
 
 
+# Domain alias as defined in CONTEXT.md and Ticket 02
+AtomicClaim = ClaimSegment
+
+
 class EvidenceChunk(BaseModel):
     """Retrieved grounding knowledge chunk (Module 3 / Student 3 contract)."""
 

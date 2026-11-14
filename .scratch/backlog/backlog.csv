@@ -1,6 +1,6 @@
 Ticket_ID,Title,Sprint,Owner,Story_Points,Dependencies,SRS_Requirement,Priority,Status
 01,Core Gateway Scaffolding Verification Endpoint and CI Pipeline,Sprint 1,Student 1,3,None,REQ-GW-01; REQ-GW-02,High,Done
-02,Deterministic Sentence and Clause Claim Segmenter,Sprint 1,Student 2,3,None,REQ-VER-01; REQ-VER-02; REQ-VER-03,High,Todo
+02,Deterministic Sentence and Clause Claim Segmenter,Sprint 1,Student 2,3,None,REQ-VER-01; REQ-VER-02; REQ-VER-03,High,Done
 03,Hybrid Knowledge Ingestion and Deterministic Dual-Index Store,Sprint 1,Student 3,5,None,REQ-RET-01; REQ-RET-02; REQ-RET-03,High,Todo
 04,Hybrid Retrieval Adapters and Reciprocal Rank Fusion Tiers 1 and 2,Sprint 1,Student 3,5,03,REQ-RET-04; REQ-RET-05,High,Todo
 05,CPU-Based DeBERTa-v3 NLI Verification and Reliability Scoring,Sprint 1,Student 2,5,02; 04,REQ-VER-04; REQ-VER-05; REQ-VER-06,High,Todo

@@ -1,6 +1,7 @@
 """Data schemas for inter-module communication."""
 
 from src.schemas.verification import (
+    AtomicClaim,
     ClaimReport,
     ClaimSegment,
     ClaimState,
@@ -11,6 +12,7 @@ from src.schemas.verification import (
 )
 
 __all__ = [
+    "AtomicClaim",
     "ClaimReport",
     "ClaimSegment",
     "ClaimState",
