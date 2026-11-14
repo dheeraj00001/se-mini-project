@@ -45,7 +45,7 @@ Story points represent relative complexity based on Fibonacci sizing ($1, 2, 3, 
 
 | Ticket ID | Ticket Title | Owner | Story Points | Dependencies | SRS Reference | Priority |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
-| [**07**](./sprint-2/07-gemma-gpu-rewriter.md) | Quantized Local Gemma GPU Generator & Targeted Rewriter | Student 4 | 5 SP | Ticket 05 | REQ-MIT-01, REQ-MIT-02 | High |
+| [**07**](./sprint-2/07-gemma-gpu-rewriter.md) | Quantized Local Gemma GPU Generator & Targeted Rewriter | Student 4 | 5 SP | Ticket 05 | REQ-MIT-01, REQ-MIT-02 | High (Done) |
 | [**08**](./sprint-2/08-secondary-verification-fallback.md) | Secondary Verification Loop & Mitigation Fallback Cascade | Student 4 | 5 SP | Ticket 07 | REQ-MIT-03, REQ-MIT-04 | High |
 | [**09**](./sprint-2/09-web-retrieval-adapter.md) | Opt-In Tier 3 External Web Retrieval (DuckDuckGo) | Student 3 | 3 SP | Ticket 04 | REQ-RET-05, REQ-RET-06, NFR-SEC-01 | Medium |
 | [**10**](./sprint-2/10-reverse-proxy-buffering.md) | OpenAI-Compatible Reverse Proxy & Full Request Buffering | Student 1 | 5 SP | Ticket 06, Ticket 08 | REQ-GW-01, REQ-GW-03 | High |
