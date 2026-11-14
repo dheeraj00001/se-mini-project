@@ -6,6 +6,7 @@ RTM Mapping:
 - UT_VER_03: Epistemic hedge detection & preservation (REQ-VER-03).
 """
 
+import sys
 import pytest
 from src.schemas.verification import ClaimSegment, AtomicClaim
 from src.verifier.segmenter import ClaimSegmenter
@@ -325,12 +326,17 @@ def test_nfr_perf_01_claim_segmentation_latency() -> None:
     # Warmup pass
     _ = ClaimSegmenter.extract_claims(text)
 
-    # Measure over multiple iterations to account for OS thread scheduling jitter
+    # Measure over multiple iterations; temporarily suspend coverage tracing hook during timing
     timings = []
-    for _ in range(5):
-        start_time = time.perf_counter()
-        claims = ClaimSegmenter.extract_claims(text)
-        timings.append((time.perf_counter() - start_time) * 1000.0)
+    old_trace = sys.gettrace()
+    try:
+        sys.settrace(None)
+        for _ in range(5):
+            start_time = time.perf_counter()
+            claims = ClaimSegmenter.extract_claims(text)
+            timings.append((time.perf_counter() - start_time) * 1000.0)
+    finally:
+        sys.settrace(old_trace)
 
     elapsed_ms = min(timings)
     assert len(claims) > 10
