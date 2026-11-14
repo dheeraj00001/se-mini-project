@@ -1,5 +1,6 @@
 """Data schemas for inter-module communication."""
 
+from src.schemas.ingestion import IngestionResult, KnowledgeIngestRequest
 from src.schemas.verification import (
     AtomicClaim,
     ClaimReport,
@@ -17,6 +18,8 @@ __all__ = [
     "ClaimSegment",
     "ClaimState",
     "EvidenceChunk",
+    "IngestionResult",
+    "KnowledgeIngestRequest",
     "MitigationMode",
     "VerificationRequest",
     "VerificationResponse",

@@ -41,3 +41,7 @@ coverage.xml
 # OS
 .DS_Store
 Thumbs.db
+
+# Data & vector stores
+data/
+*.joblib
