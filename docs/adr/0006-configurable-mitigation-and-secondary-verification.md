@@ -1,0 +1,3 @@
+# Configurable Mitigation Strategy and Secondary Verification
+
+Responding to detected factual contradictions requires different behavior depending on integration topology, while preventing correction loops from hallucinating further. We decided to implement four configurable mitigation modes (`flag`, `rewrite`, `redact`, `block`), defaulting `/verify` to `flag` and `/v1/chat/completions` to `rewrite`. To ensure reliability, all rewritten responses undergo a mandatory single secondary verification pass; if secondary verification still detects contradictions, the gateway terminates the correction loop and cascades to `redact` or `block`. Unverified claims are explicitly exempt from rewriting to prevent erasing legitimate information lacking local corroboration.

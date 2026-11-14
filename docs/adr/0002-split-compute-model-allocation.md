@@ -1,0 +1,3 @@
+# Split Compute Model Allocation for Low-VRAM Hardware
+
+With the hardware constrained to an NVIDIA RTX 2050 offering 4 GB VRAM, running a generative LLM alongside embedding and NLI models concurrently on the GPU causes immediate out-of-memory errors. We decided to adopt a split-compute strategy: the 4B parameter generator (Gemma) runs in 4-bit quantization on the GPU (~2.2 GB VRAM), while the dense embedder and NLI cross-encoder (`cross-encoder/nli-deberta-v3-base`) execute purely on CPU threads. This prevents CUDA OOM, provides predictable inference concurrency, and eliminates model swapping overhead at the cost of modest CPU latency (~50-80 ms per claim verification).

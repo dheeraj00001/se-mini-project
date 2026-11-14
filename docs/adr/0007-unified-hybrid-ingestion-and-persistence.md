@@ -1,0 +1,3 @@
+# Unified Hybrid Ingestion Pipeline and Deterministic Dual-Index Persistence
+
+Hybrid retrieval requires dense semantic search (Qdrant) and sparse keyword search (BM25) to evaluate the exact same text passages without index drift. We decided to build a unified ingestion pipeline supporting PDF, Markdown, and TXT files using 250-300 token chunk windows (50-token overlap) tagged with deterministic content hashes as chunk IDs. Both the local file-backed Qdrant store and the serialized BM25 index are updated in lockstep and persisted to disk, ensuring index synchronization, post-restart survival, and consistent reciprocal rank fusion (RRF).

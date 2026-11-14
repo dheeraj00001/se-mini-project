@@ -1,0 +1,3 @@
+# Dual-Mode Operational Topology (Proxy + Sidecar)
+
+Downstream applications need both transparent drop-in dehallucination without code changes and fine-grained programmatic verification for custom pipelines and automated testing. We decided to structure the system as a dual-mode FastAPI gateway exposing an OpenAI-compatible reverse proxy (`/v1/chat/completions`) alongside dedicated verification endpoints (`/verify`), backed by a shared verification service layer. This enables zero-code drop-in replacement for existing LLM clients while giving benchmarking suites and custom apps access to granular claim-level entailment metrics.

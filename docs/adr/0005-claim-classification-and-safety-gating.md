@@ -1,0 +1,3 @@
+# Claim Classification, Document Reliability Metrics, and Safety Gating
+
+Deciding how to translate raw NLI probability distributions into actionable downstream verdicts requires balancing explainability with automated safety gating. We decided on a 3-way discrete claim taxonomy (SUPPORTED, CONTRADICTED, UNVERIFIED) with configurable base thresholds ($P \ge 0.70$), paired with three document-level ratio metrics (Hallucination Rate, Verification Rate, Unverified Rate). A dual-flag gate enforces system safety: a hard circuit-breaker (`is_safe = false`) trips on high-confidence contradiction ($P \ge 0.85$), while a softer advisory flag (`needs_review = true`) signals unresolved unverified claims, with all thresholds subjected to validation dataset calibration.

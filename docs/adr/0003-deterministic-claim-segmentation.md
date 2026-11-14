@@ -1,0 +1,3 @@
+# Deterministic Claim Segmentation via NLTK and Heuristics
+
+To verify generated statements with an NLI cross-encoder, responses must be decomposed into independent atomic claims without adding GPU latency or hallucination risk during parsing. We decided to use a deterministic pipeline combining NLTK sentence tokenization with selective independent-clause splitting, while preserving claims under epistemic hedges (e.g. "I think..."). This provides sub-5ms decomposition latency, completely avoids GPU resource contention, and prevents JSON/instruction drift common in 4B LLM-based proposition extraction.

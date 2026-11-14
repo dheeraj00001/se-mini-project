@@ -1,0 +1,3 @@
+# Waterfall Retrieval and Evidence Tier Escalation
+
+Evidence retrieval across multiple sources (prompt context, local vector store, external search) needs to minimize latency, avoid data leakage, and honor network security boundaries. We decided to implement a sequential waterfall retrieval architecture across three defined tiers: Tier 1 (In-Context Documents), Tier 2 (Local Hybrid KB: Qdrant + BM25), and Tier 3 (External Web Search: DuckDuckGo). The system defaults to Tier 2 maximum, requires explicit client opt-in for Tier 3 web searches, enforces an immutable server-side ceiling (`SERVER_MAX_TIER`), and categorizes unsupported claims as "Unverified" rather than hallucinated when evidence is absent.

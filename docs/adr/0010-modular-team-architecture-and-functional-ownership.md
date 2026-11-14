@@ -1,0 +1,3 @@
+# Modular Team Architecture and Functional Ownership
+
+To satisfy individual contribution requirements for UE24CS341A (4 students, each owning one complete functional feature with measurable PRs and unit test coverage), the codebase must avoid tight monolithic coupling. We decided to structure the system into four independent modules with explicit typed interfaces: Module 1 (Gateway & Streaming Proxy, Student 1), Module 2 (Claim Segmentation & NLI Verification, Student 2), Module 3 (Hybrid Knowledge Ingestion & Retrieval, Student 3), and Module 4 (Mitigation & Secondary Verification, Student 4). Testing and evaluation is a shared project-wide responsibility where each owner writes unit tests for their module, while Student 4 coordinates the empirical benchmark pipeline.

@@ -1,0 +1,3 @@
+# Buffered Interception and Synthetic SSE Replay for Streaming Clients
+
+Standard streaming clients request token-by-token output via Server-Sent Events (SSE), but releasing tokens before whole-sentence and whole-document verification risks leaking hallucinations that cannot be recalled once sent over the wire. We decided to implement full response buffering in the reverse proxy: the upstream stream is consumed completely, verified across all extracted claims, and mitigated if needed, before replaying the finalized sanitized text as synthetic SSE chunks to the client. This prioritizes factual safety and architectural determinism over Time-to-First-Token (TTFT) while maintaining 100% protocol compatibility with OpenAI client SDKs.
