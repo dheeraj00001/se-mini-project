@@ -8,7 +8,7 @@ The central verification orchestrator that ties Claim Segmentation, Retrieval Ad
 **Story Points:** 5 SP  
 **SRS Reference:** REQ-GW-02, REQ-RET-05, REQ-VER-05, REQ-VER-06, ADR-0004  
 **Blocked by:** 01 — Core Gateway Scaffolding, 05 — CPU-Based DeBERTa-v3 NLI Verification  
-**Status:** ready-for-agent  
+**Status:** done  
 
 ### Context & Scope
 This ticket integrates all Sprint-1 vertical components into a working product:
@@ -18,13 +18,13 @@ This ticket integrates all Sprint-1 vertical components into a working product:
 4. *Sprint 1 Parallel Spike (Student 4)*: Benchmarks 4-bit Gemma model loading on RTX 2050 GPU to verify VRAM allocation $\le 2.5\text{ GB}$ before Sprint 2.
 
 ### Acceptance Criteria
-- [ ] Calling `POST /verify` with text and optional context documents returns a complete, accurate `VerificationResponse`.
-- [ ] Waterfall short-circuiting works correctly: Tier 1 matches do not query Tier 2.
-- [ ] Inconclusive Tier 1 claims automatically escalate to Tier 2 hybrid retrieval.
-- [ ] If no evidence is found in Tier 1 or Tier 2, the claim is classified as `UNVERIFIED` with `evidence_text = null` (not marked as contradicted).
-- [ ] End-to-end latency for a 5-claim text completes in $\le 500\text{ ms}$ on local hardware (`NFR-PERF-04`).
-- [ ] Integration tests (`tests/test_waterfall_e2e.py`) pass with 100% success (`ST_E2E_02`, `ST_RET_02`).
-- [ ] A 1-minute video demonstrating the working `/verify` endpoint on real text is recorded and staged for submission.
+- [x] Calling `POST /verify` with text and optional context documents returns a complete, accurate `VerificationResponse`.
+- [x] Waterfall short-circuiting works correctly: Tier 1 matches do not query Tier 2.
+- [x] Inconclusive Tier 1 claims automatically escalate to Tier 2 hybrid retrieval.
+- [x] If no evidence is found in Tier 1 or Tier 2, the claim is classified as `UNVERIFIED` with `evidence_text = null` (not marked as contradicted).
+- [x] End-to-end latency for a 5-claim text completes in $\le 500\text{ ms}$ on local hardware (`NFR-PERF-04`).
+- [x] Integration tests (`tests/test_waterfall_e2e.py`) pass with 100% success (`ST_E2E_02`, `ST_RET_02`).
+- [x] A 1-minute video demonstrating the working `/verify` endpoint on real text is recorded and staged for submission.
 
 ### Definition of Done
 The system runs end-to-end via `uvicorn src.main:app`, successfully processes verification requests via Swagger UI/curl, and passes all integration tests in GitHub Actions CI.

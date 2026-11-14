@@ -185,17 +185,30 @@ def test_ut_gw_02_evidence_chunk_contract() -> None:
 
 
 def test_ut_gw_02_verify_endpoint_success_stub(client: TestClient) -> None:
-    """UT_GW_02: Verify POST /verify returns schema-compliant response stub."""
+    """UT_GW_02: Verify POST /verify returns schema-compliant response."""
+    # Test conversational non-factual text (zero extracted claims)
+    res_filler = client.post("/verify", json={"text": "Hello! How can I help you today?"})
+    assert res_filler.status_code == 200
+    data_filler = res_filler.json()
+    assert data_filler["is_safe"] is True
+    assert data_filler["needs_review"] is False
+    assert data_filler["hallucination_rate"] == 0.0
+    assert data_filler["verification_rate"] == 0.0
+    assert data_filler["unverified_rate"] == 0.0
+    assert data_filler["claims"] == []
+
+    # Test factual statement
     payload = {"text": "The Eiffel Tower is in Paris."}
     response = client.post("/verify", json=payload)
     assert response.status_code == 200
     data = response.json()
     assert data["is_safe"] is True
-    assert data["needs_review"] is False
-    assert data["hallucination_rate"] == 0.0
-    assert data["verification_rate"] == 0.0
-    assert data["unverified_rate"] == 0.0
-    assert data["claims"] == []
+    assert "needs_review" in data
+    assert "hallucination_rate" in data
+    assert "verification_rate" in data
+    assert "unverified_rate" in data
+    assert len(data["claims"]) == 1
+    assert data["claims"][0]["claim_text"] == "The Eiffel Tower is in Paris."
     assert data["sanitized_text"] == "The Eiffel Tower is in Paris."
 
 

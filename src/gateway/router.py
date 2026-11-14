@@ -10,11 +10,13 @@ from src.retrieval.parser import extract_text_from_bytes
 from src.retrieval.store import DualIndexStore
 from src.schemas.ingestion import IngestionResult, KnowledgeIngestRequest
 from src.schemas.verification import VerificationRequest, VerificationResponse
+from src.verifier.orchestrator import WaterfallOrchestrator, get_orchestrator
 
 router = APIRouter()
 
-# Global default store instance (can be monkeypatched or injected in tests)
+# Global default store and orchestrator instances (can be monkeypatched or injected in tests)
 _default_store: Optional[DualIndexStore] = None
+_default_orchestrator: Optional[WaterfallOrchestrator] = None
 
 
 def get_knowledge_store() -> DualIndexStore:
@@ -23,6 +25,15 @@ def get_knowledge_store() -> DualIndexStore:
     if _default_store is None:
         _default_store = DualIndexStore()
     return _default_store
+
+
+def get_orchestrator_instance() -> WaterfallOrchestrator:
+    """Dependency provider for the WaterfallOrchestrator instance."""
+    global _default_orchestrator
+    if _default_orchestrator is None:
+        store = get_knowledge_store()
+        _default_orchestrator = get_orchestrator(store=store)
+    return _default_orchestrator
 
 
 @router.get(
@@ -44,20 +55,13 @@ async def health_check() -> Dict[str, Any]:
     summary="Verify factual claims against tiered evidence sources",
 )
 async def verify_endpoint(request: VerificationRequest) -> VerificationResponse:
-    """Foundational verification endpoint stub (REQ-GW-02 / UT_GW_02).
+    """NLI-aware Waterfall verification sidecar endpoint (REQ-GW-02, REQ-RET-05, REQ-VER-05..06).
 
-    Accepts text, prompt, context_documents, max_retrieval_tier, and mitigation_mode.
-    Returns a schema-compliant VerificationResponse.
+    Coordinates deterministic claim segmentation, tiered waterfall retrieval,
+    and CPU-based NLI inference to deliver sentence-level reliability metrics.
     """
-    return VerificationResponse(
-        is_safe=True,
-        needs_review=False,
-        hallucination_rate=0.0,
-        verification_rate=0.0,
-        unverified_rate=0.0,
-        claims=[],
-        sanitized_text=request.text,
-    )
+    orchestrator = get_orchestrator_instance()
+    return orchestrator.verify(request)
 
 
 @router.post(

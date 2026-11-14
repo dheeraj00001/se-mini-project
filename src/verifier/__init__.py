@@ -12,6 +12,11 @@ from src.verifier.nli import (
     get_nli_verifier,
     map_deberta_probabilities,
 )
+from src.verifier.orchestrator import (
+    WaterfallOrchestrator,
+    VerificationOrchestrator,
+    get_orchestrator,
+)
 from src.verifier.segmenter import ClaimSegmenter
 
 __all__ = [
@@ -20,10 +25,13 @@ __all__ = [
     "DebertaNLIVerifier",
     "MockNLIVerifier",
     "NLIVerifier",
+    "VerificationOrchestrator",
+    "WaterfallOrchestrator",
     "compute_document_rates",
     "compute_softmax",
     "determine_claim_state",
     "evaluate_safety_gate",
     "get_nli_verifier",
+    "get_orchestrator",
     "map_deberta_probabilities",
 ]
