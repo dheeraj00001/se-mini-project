@@ -48,9 +48,9 @@ def parse_security_headers(headers: Mapping[str, str]) -> Dict[str, Any]:
 
     for k, v in headers.items():
         k_lower = k.lower()
-        if k_lower == HEADER_MAX_TIER:
+        if k_lower in (HEADER_MAX_TIER, "x-dehallucination-max-tier"):
             raw_max_tier = v
-        elif k_lower == HEADER_MITIGATION_MODE:
+        elif k_lower in (HEADER_MITIGATION_MODE, "x-dehallucination-mitigation"):
             raw_mit_mode = v
 
     if raw_max_tier is not None:
