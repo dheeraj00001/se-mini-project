@@ -6,7 +6,7 @@ allowing drop-in replacement for OpenAI SDK clients and tools.
 
 import time
 import uuid
-from typing import List, Optional
+from typing import Any, List, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.schemas.verification import MitigationMode
@@ -157,6 +157,79 @@ class ChatCompletionResponse(BaseModel):
         ...,
         min_length=1,
         description="List of completion outcome choices.",
+    )
+    usage: Optional[ChatCompletionUsage] = Field(
+        default=None,
+        description="Optional token usage metrics.",
+    )
+
+
+class ChatCompletionChunkDelta(BaseModel):
+    """Delta update for streaming chat completions (REQ-GW-04, ADR-0008)."""
+
+    model_config = ConfigDict(extra="allow")
+
+    role: Optional[str] = Field(
+        default=None,
+        description="Role of the message author (typically 'assistant' in the initial chunk).",
+    )
+    content: Optional[str] = Field(
+        default=None,
+        description="Incremental text content of the chunk.",
+    )
+
+
+class ChatCompletionChunkChoice(BaseModel):
+    """Individual choice element within a streaming chunk."""
+
+    model_config = ConfigDict(extra="allow")
+
+    index: int = Field(
+        default=0,
+        description="Choice sequence index.",
+    )
+    delta: ChatCompletionChunkDelta = Field(
+        ...,
+        description="Incremental message content delta.",
+    )
+    finish_reason: Optional[str] = Field(
+        default=None,
+        description="Termination reason ('stop', 'length', etc.) or None while streaming.",
+    )
+    logprobs: Optional[Any] = Field(
+        default=None,
+        description="Optional log probability information.",
+    )
+
+
+class ChatCompletionChunk(BaseModel):
+    """OpenAI-compatible streaming chat completion chunk object (REQ-GW-04, ADR-0008)."""
+
+    model_config = ConfigDict(extra="allow")
+
+    id: str = Field(
+        default_factory=lambda: f"chatcmpl-{uuid.uuid4().hex[:24]}",
+        description="Unique completion identifier matching all chunks for this request.",
+    )
+    object: str = Field(
+        default="chat.completion.chunk",
+        description="Object type descriptor.",
+    )
+    created: int = Field(
+        default_factory=lambda: int(time.time()),
+        description="Unix epoch timestamp in seconds.",
+    )
+    model: str = Field(
+        ...,
+        description="Model identifier that produced the completion.",
+    )
+    choices: List[ChatCompletionChunkChoice] = Field(
+        ...,
+        description="List of choice delta updates.",
+    )
+    system_fingerprint: Optional[str] = Field(
+        default=None,
+        description="Optional system configuration fingerprint.",
     )
     usage: Optional[ChatCompletionUsage] = Field(
         default=None,

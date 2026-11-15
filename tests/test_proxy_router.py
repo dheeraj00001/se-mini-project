@@ -279,16 +279,17 @@ def test_ut_gw_01_format_chat_prompt_variations() -> None:
     assert q_empty == ""
 
 
-def test_ut_gw_01_chat_completions_stream_flag_staged_501(client: TestClient) -> None:
-    """UT_GW_01: Verify stream: true returns 501 Not Implemented staging for Ticket 11."""
+def test_ut_gw_01_chat_completions_stream_flag_streaming(client: TestClient) -> None:
+    """UT_GW_01: Verify stream: true returns 200 text/event-stream (Ticket 11)."""
     payload = {
         "model": "google/gemma-4-E4B",
         "messages": [{"role": "user", "content": "Stream this"}],
         "stream": True,
     }
-    response = client.post("/v1/chat/completions", json=payload)
-    assert response.status_code == 501
-    assert "Ticket 11" in response.json()["detail"]
+    response = client.post("/v1/chat/completions", json=payload, headers={"X-SSE-Pacing-Ms": "0"})
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers.get("content-type", "")
+    assert "data: [DONE]" in response.text
 
 
 # ============================================================================

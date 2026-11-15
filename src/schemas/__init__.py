@@ -3,6 +3,9 @@
 from src.schemas.ingestion import IngestionResult, KnowledgeIngestRequest
 from src.schemas.openai import (
     ChatCompletionChoice,
+    ChatCompletionChunk,
+    ChatCompletionChunkChoice,
+    ChatCompletionChunkDelta,
     ChatCompletionMessage,
     ChatCompletionRequest,
     ChatCompletionResponse,
@@ -29,6 +32,9 @@ from src.schemas.verification import (
 __all__ = [
     "AtomicClaim",
     "ChatCompletionChoice",
+    "ChatCompletionChunk",
+    "ChatCompletionChunkChoice",
+    "ChatCompletionChunkDelta",
     "ChatCompletionMessage",
     "ChatCompletionRequest",
     "ChatCompletionResponse",

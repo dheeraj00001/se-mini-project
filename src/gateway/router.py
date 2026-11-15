@@ -3,7 +3,7 @@
 import hashlib
 import time
 import uuid
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from starlette.datastructures import UploadFile
 
@@ -13,6 +13,7 @@ from src.gateway.middleware import (
     enforce_server_tier_ceiling,
     parse_security_headers,
 )
+from src.gateway.sse import build_sse_streaming_response
 from src.mitigation.generator import BaseGenerator, get_generator
 from src.retrieval.ingest import IngestionPipeline
 from src.retrieval.parser import extract_text_from_bytes
@@ -221,28 +222,20 @@ async def chat_completions(
     payload: ChatCompletionRequest,
     raw_request: Request,
     response: Response,
-) -> ChatCompletionResponse:
+) -> Union[ChatCompletionResponse, Response]:
     """OpenAI-compatible reverse proxy endpoint with 100% response buffering.
 
-    Implements REQ-GW-01, REQ-GW-03, REQ-GW-05.
+    Implements REQ-GW-01, REQ-GW-03, REQ-GW-04, REQ-GW-05, and ADR-0008.
     Accepts standard OpenAI chat completion schemas, prompts the local Gemma model,
     buffers 100% of the raw response, runs full dehallucination verification with
     default mitigation_mode='rewrite' (ADR-0001, ADR-0008), injects verification
-    metadata headers, and returns a verified OpenAI ChatCompletion response.
+    metadata headers, and returns either a verified OpenAI ChatCompletion response
+    or progressive synthetic SSE event stream.
     """
     if not payload.messages:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="ChatCompletionRequest 'messages' list must contain at least one message.",
-        )
-
-    if payload.stream:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail=(
-                "Streaming replay (stream: true) requires Sprint 2 Ticket 11 "
-                "(Synthetic SSE Replay Engine). Set stream: false or omit stream."
-            ),
         )
 
     overrides = parse_security_headers(raw_request.headers)
@@ -285,20 +278,42 @@ async def chat_completions(
     orchestrator = get_orchestrator_instance()
     verification_response = orchestrator.verify(verification_request)
 
-    response.headers["X-Dehallucination-Safe"] = (
-        "true" if verification_response.is_safe else "false"
-    )
-    response.headers["X-Hallucination-Rate"] = f"{verification_response.hallucination_rate:.2f}"
-    response.headers["X-Verification-Rate"] = f"{verification_response.verification_rate:.2f}"
-    response.headers["X-Needs-Review"] = "true" if verification_response.needs_review else "false"
+    verification_headers = {
+        "X-Dehallucination-Safe": "true" if verification_response.is_safe else "false",
+        "X-Hallucination-Rate": f"{verification_response.hallucination_rate:.2f}",
+        "X-Verification-Rate": f"{verification_response.verification_rate:.2f}",
+        "X-Needs-Review": "true" if verification_response.needs_review else "false",
+    }
 
     sanitized_output = verification_response.sanitized_text
+    completion_id = f"chatcmpl-{uuid.uuid4().hex[:24]}"
+    created_ts = int(time.time())
+
+    # Streaming replay via synthetic SSE chunks (REQ-GW-04, ADR-0008)
+    if payload.stream:
+        pacing_ms: Optional[float] = None
+        pacing_header = raw_request.headers.get("x-sse-pacing-ms")
+        if pacing_header:
+            try:
+                pacing_ms = float(pacing_header)
+            except ValueError:
+                pacing_ms = None
+
+        return build_sse_streaming_response(
+            text=sanitized_output,
+            model=payload.model,
+            verification_headers=verification_headers,
+            pacing_delay_ms=pacing_ms,
+            request=raw_request,
+            completion_id=completion_id,
+            created_ts=created_ts,
+        )
+
+    for header_name, header_val in verification_headers.items():
+        response.headers[header_name] = header_val
 
     prompt_tokens = max(1, len(gen_prompt.split()))
     completion_tokens = max(1, len(sanitized_output.split())) if sanitized_output.strip() else 0
-
-    completion_id = f"chatcmpl-{uuid.uuid4().hex[:24]}"
-    created_ts = int(time.time())
 
     return ChatCompletionResponse(
         id=completion_id,
