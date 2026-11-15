@@ -14,7 +14,7 @@ Core Responsibilities:
 5. Comprehensive schema-compliant VerificationResponse compilation.
 """
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, cast
 from src.retrieval.adapters import (
     RetrievalAdapter,
     get_retrieval_adapter,
@@ -23,6 +23,7 @@ from src.retrieval.store import DualIndexStore
 from src.schemas.verification import (
     ClaimReport,
     ClaimState,
+    MitigationMode,
     VerificationRequest,
     VerificationResponse,
 )
@@ -50,6 +51,10 @@ class WaterfallOrchestrator:
         severe_contradiction_threshold: float = 0.85,
         server_max_tier: int = 3,
         top_k_per_tier: int = 3,
+        rewriter: Optional[Any] = None,
+        mitigation_pipeline: Optional[Any] = None,
+        enable_mitigation: bool = True,
+        raise_on_block: bool = True,
     ) -> None:
         if store is not None:
             self._store = store
@@ -74,6 +79,25 @@ class WaterfallOrchestrator:
         self._severe_contradiction_threshold = severe_contradiction_threshold
         self._server_max_tier = server_max_tier
         self._top_k_per_tier = top_k_per_tier
+        self._rewriter = rewriter
+        self._enable_mitigation = enable_mitigation
+        self._raise_on_block = raise_on_block
+
+        if mitigation_pipeline is not None:
+            self._mitigation_pipeline = mitigation_pipeline
+        elif self._enable_mitigation:
+            from src.mitigation.pipeline import MitigationPipeline
+            from src.mitigation.rewriter import TargetedRewriter
+
+            active_rewriter = self._rewriter if self._rewriter is not None else TargetedRewriter()
+            self._mitigation_pipeline = MitigationPipeline(
+                rewriter=active_rewriter,
+                orchestrator=self,
+                contradiction_threshold=self._contradiction_threshold,
+                severe_contradiction_threshold=self._severe_contradiction_threshold,
+            )
+        else:
+            self._mitigation_pipeline = None
 
     @property
     def retrieval_adapter(self) -> RetrievalAdapter:
@@ -95,7 +119,19 @@ class WaterfallOrchestrator:
         """Return the underlying DualIndexStore."""
         return self._store
 
-    def verify(self, request: VerificationRequest) -> VerificationResponse:
+    @property
+    def mitigation_pipeline(self) -> Optional[Any]:
+        """Return the underlying MitigationPipeline instance."""
+        return self._mitigation_pipeline
+
+    @property
+    def rewriter(self) -> Optional[Any]:
+        """Return the underlying TargetedRewriter instance."""
+        return self._rewriter
+
+    def verify(
+        self, request: VerificationRequest, _is_secondary: bool = False
+    ) -> VerificationResponse:
         """Execute end-to-end NLI-aware Waterfall verification on incoming text."""
         # 1. Deterministic claim segmentation (REQ-VER-01..03)
         claim_segments = self._segmenter.extract_claims(request.text)
@@ -148,6 +184,7 @@ class WaterfallOrchestrator:
                         decisive_report = ClaimReport(
                             claim_id=claim.claim_id,
                             claim_text=claim_text,
+                            original_sentence=claim.original_sentence,
                             state=state,
                             probabilities=probs,
                             evidence_tier=1,
@@ -186,6 +223,7 @@ class WaterfallOrchestrator:
                         decisive_report = ClaimReport(
                             claim_id=claim.claim_id,
                             claim_text=claim_text,
+                            original_sentence=claim.original_sentence,
                             state=state,
                             probabilities=probs,
                             evidence_tier=2,
@@ -203,6 +241,7 @@ class WaterfallOrchestrator:
                 ClaimReport(
                     claim_id=claim.claim_id,
                     claim_text=claim_text,
+                    original_sentence=claim.original_sentence,
                     state=ClaimState.UNVERIFIED,
                     probabilities={"contradiction": 0.0, "entailment": 0.0, "neutral": 1.0},
                     evidence_tier=None,
@@ -216,7 +255,7 @@ class WaterfallOrchestrator:
             severe_contradiction_threshold=self._severe_contradiction_threshold,
         )
 
-        return VerificationResponse(
+        initial_response = VerificationResponse(
             is_safe=is_safe,
             needs_review=needs_review,
             hallucination_rate=rates["hallucination_rate"],
@@ -225,6 +264,24 @@ class WaterfallOrchestrator:
             claims=claims_reports,
             sanitized_text=request.text,
         )
+
+        if _is_secondary or not self._enable_mitigation:
+            return initial_response
+
+        if request.mitigation_mode == MitigationMode.FLAG:
+            return initial_response
+
+        if self._mitigation_pipeline is not None:
+            return cast(
+                VerificationResponse,
+                self._mitigation_pipeline.execute(
+                    request=request,
+                    initial_response=initial_response,
+                    raise_on_block=self._raise_on_block,
+                ),
+            )
+
+        return initial_response
 
 
 # Backward-compatible alias
@@ -237,6 +294,10 @@ def get_orchestrator(
     retrieval_adapter: Optional[RetrievalAdapter] = None,
     segmenter: Optional[ClaimSegmenter] = None,
     use_mock: bool = False,
+    rewriter: Optional[Any] = None,
+    mitigation_pipeline: Optional[Any] = None,
+    enable_mitigation: bool = True,
+    raise_on_block: bool = True,
     **kwargs: Any,
 ) -> WaterfallOrchestrator:
     """Factory creating an instantiated WaterfallOrchestrator."""
@@ -256,10 +317,22 @@ def get_orchestrator(
     if active_nli is None:
         active_nli = get_nli_verifier(use_mock=use_mock)
 
+    active_rewriter = rewriter
+    if active_rewriter is None and enable_mitigation and mitigation_pipeline is None:
+        from src.mitigation.generator import get_generator
+        from src.mitigation.rewriter import TargetedRewriter
+
+        gen = get_generator(use_mock=use_mock)
+        active_rewriter = TargetedRewriter(generator=gen)
+
     return WaterfallOrchestrator(
         store=active_store,
         nli_verifier=active_nli,
         retrieval_adapter=retrieval_adapter,
         segmenter=segmenter,
+        rewriter=active_rewriter,
+        mitigation_pipeline=mitigation_pipeline,
+        enable_mitigation=enable_mitigation,
+        raise_on_block=raise_on_block,
         **kwargs,
     )

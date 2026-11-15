@@ -24,6 +24,10 @@ from src.schemas.verification import EvidenceChunk
 class DualIndexStore:
     """Manages synchronized persistence across Qdrant vector store and BM25 index."""
 
+    # Process-level registry for active file-backed Qdrant clients to prevent
+    # portalocker lock collision on Windows when multiple store instances access the same path.
+    _SHARED_CLIENTS: Dict[str, Tuple[QdrantClient, int]] = {}
+
     def __init__(
         self,
         qdrant_path: Optional[str] = "./data/qdrant_storage",
@@ -36,6 +40,8 @@ class DualIndexStore:
         self._collection_name = collection_name
         self._bm25_path = Path(bm25_path) if bm25_path else None
         self._embedder: BaseEmbedder = embedder if embedder is not None else get_default_embedder()
+        self._canonical_storage_path: Optional[str] = None
+        self._closed: bool = False
 
         # In-memory indices & metadata cache
         self._chunks: Dict[str, EvidenceChunk] = {}
@@ -46,15 +52,49 @@ class DualIndexStore:
         if not self._in_memory and self._bm25_path and self._bm25_path.is_file():
             self._load_bm25()
 
-        # Initialize Qdrant Client
+        # Initialize Qdrant Client (share client instance if same directory in-process)
         if self._in_memory or not qdrant_path:
             self._client = QdrantClient(":memory:")
         else:
-            q_dir = Path(qdrant_path)
+            q_dir = Path(qdrant_path).resolve()
             q_dir.mkdir(parents=True, exist_ok=True)
-            self._client = QdrantClient(path=str(q_dir))
+            canonical = str(q_dir).lower()
+            self._canonical_storage_path = canonical
+
+            if canonical in DualIndexStore._SHARED_CLIENTS:
+                existing_client, ref_count = DualIndexStore._SHARED_CLIENTS[canonical]
+                self._client = existing_client
+                DualIndexStore._SHARED_CLIENTS[canonical] = (existing_client, ref_count + 1)
+            else:
+                self._client = QdrantClient(path=str(q_dir))
+                DualIndexStore._SHARED_CLIENTS[canonical] = (self._client, 1)
 
         self._ensure_qdrant_collection()
+
+    def close(self) -> None:
+        """Close Qdrant client connection and release storage locks (Windows/portalocker)."""
+        if getattr(self, "_closed", False):
+            return
+        self._closed = True
+
+        try:
+            canonical = getattr(self, "_canonical_storage_path", None)
+            if canonical and canonical in DualIndexStore._SHARED_CLIENTS:
+                client, ref_count = DualIndexStore._SHARED_CLIENTS[canonical]
+                if ref_count <= 1:
+                    DualIndexStore._SHARED_CLIENTS.pop(canonical, None)
+                    if hasattr(client, "close"):
+                        client.close()
+                else:
+                    DualIndexStore._SHARED_CLIENTS[canonical] = (client, ref_count - 1)
+                self._canonical_storage_path = None
+            elif hasattr(self, "_client") and hasattr(self._client, "close"):
+                self._client.close()
+        except Exception:
+            pass
+
+    def __del__(self) -> None:
+        self.close()
 
     @property
     def embedder(self) -> BaseEmbedder:
@@ -327,10 +367,3 @@ class DualIndexStore:
     def count(self) -> int:
         """Return total number of unique chunks indexed."""
         return len(self._chunks)
-
-    def close(self) -> None:
-        """Close Qdrant client connection."""
-        try:
-            self._client.close()
-        except Exception:
-            pass

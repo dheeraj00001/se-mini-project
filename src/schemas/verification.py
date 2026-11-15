@@ -89,6 +89,10 @@ class ClaimReport(BaseModel):
         default=None,
         description="Premise passage used for verification.",
     )
+    original_sentence: Optional[str] = Field(
+        default=None,
+        description="Source sentence from which the atomic claim was extracted.",
+    )
 
 
 class VerificationRequest(BaseModel):
@@ -111,6 +115,10 @@ class VerificationRequest(BaseModel):
     mitigation_mode: MitigationMode = Field(
         default=MitigationMode.FLAG,
         description="Desired action upon detecting contradictions.",
+    )
+    fallback_mode: Optional[MitigationMode] = Field(
+        default=None,
+        description="Fallback mode if secondary verification fails (defaults to REDACT).",
     )
 
     @field_validator("text")
