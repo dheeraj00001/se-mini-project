@@ -1,0 +1,799 @@
+{
+  "timestamp": "2026-11-15T14:47:27.047598",
+  "seed": 42,
+  "datasets": {
+    "FEVER": 60,
+    "HaluEval": 60
+  },
+  "split_counts": {
+    "total": 120,
+    "calibration": 36,
+    "test": 84
+  },
+  "calibration": {
+    "optimal_entailment_threshold": 0.5,
+    "optimal_contradiction_threshold": 0.5,
+    "severe_contradiction_threshold": 0.85,
+    "baseline_macro_f1": 0.7205,
+    "optimal_macro_f1": 0.7205,
+    "f1_gain": 0.0,
+    "calibration_metrics": {
+      "confusion_matrix": [
+        [
+          10,
+          0,
+          4
+        ],
+        [
+          2,
+          7,
+          4
+        ],
+        [
+          0,
+          0,
+          9
+        ]
+      ],
+      "labels": [
+        "SUPPORTED",
+        "CONTRADICTED",
+        "UNVERIFIED"
+      ],
+      "accuracy": 0.7222,
+      "macro_precision": 0.7876,
+      "macro_recall": 0.7509,
+      "macro_f1": 0.7205,
+      "weighted_precision": 0.8175,
+      "weighted_recall": 0.7222,
+      "weighted_f1": 0.725,
+      "micro_precision": 0.7222,
+      "micro_recall": 0.7222,
+      "micro_f1": 0.7222,
+      "per_class": {
+        "SUPPORTED": {
+          "precision": 0.8333,
+          "recall": 0.7143,
+          "f1": 0.7692,
+          "support": 14
+        },
+        "CONTRADICTED": {
+          "precision": 1.0,
+          "recall": 0.5385,
+          "f1": 0.7,
+          "support": 13
+        },
+        "UNVERIFIED": {
+          "precision": 0.5294,
+          "recall": 1.0,
+          "f1": 0.6923,
+          "support": 9
+        }
+      },
+      "roc_auc": {
+        "multiclass_macro_ovr": 0.5,
+        "multiclass_weighted_ovr": 0.5,
+        "auc_supported": 0.5,
+        "auc_contradicted": 0.5,
+        "auc_unverified": 0.5
+      },
+      "roc_curves": {
+        "SUPPORTED": {
+          "fpr": [
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            1.0
+          ],
+          "thresholds": [
+            Infinity,
+            0.0
+          ]
+        },
+        "CONTRADICTED": {
+          "fpr": [
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            1.0
+          ],
+          "thresholds": [
+            Infinity,
+            0.0
+          ]
+        },
+        "UNVERIFIED": {
+          "fpr": [
+            0.0,
+            1.0
+          ],
+          "tpr": [
+            0.0,
+            1.0
+          ],
+          "thresholds": [
+            Infinity,
+            0.0
+          ]
+        }
+      }
+    },
+    "sweep_results": [
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.5,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.55,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.6,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.65,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.7,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.75,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.8,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.5,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.55,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.6,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.65,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.7,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.75,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.8,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      },
+      {
+        "tau_entailment": 0.85,
+        "tau_contradiction": 0.85,
+        "macro_f1": 0.7205,
+        "contradiction_f1": 0.7,
+        "accuracy": 0.7222
+      }
+    ]
+  },
+  "test_metrics": {
+    "confusion_matrix": [
+      [
+        18,
+        0,
+        13
+      ],
+      [
+        11,
+        14,
+        7
+      ],
+      [
+        2,
+        0,
+        19
+      ]
+    ],
+    "labels": [
+      "SUPPORTED",
+      "CONTRADICTED",
+      "UNVERIFIED"
+    ],
+    "accuracy": 0.6071,
+    "macro_precision": 0.6893,
+    "macro_recall": 0.641,
+    "macro_f1": 0.6076,
+    "weighted_precision": 0.717,
+    "weighted_recall": 0.6071,
+    "weighted_f1": 0.6045,
+    "micro_precision": 0.6071,
+    "micro_recall": 0.6071,
+    "micro_f1": 0.6071,
+    "per_class": {
+      "SUPPORTED": {
+        "precision": 0.5806,
+        "recall": 0.5806,
+        "f1": 0.5806,
+        "support": 31
+      },
+      "CONTRADICTED": {
+        "precision": 1.0,
+        "recall": 0.4375,
+        "f1": 0.6087,
+        "support": 32
+      },
+      "UNVERIFIED": {
+        "precision": 0.4872,
+        "recall": 0.9048,
+        "f1": 0.6333,
+        "support": 21
+      }
+    },
+    "roc_auc": {
+      "multiclass_macro_ovr": 0.5,
+      "multiclass_weighted_ovr": 0.5,
+      "auc_supported": 0.5,
+      "auc_contradicted": 0.5,
+      "auc_unverified": 0.5
+    },
+    "roc_curves": {
+      "SUPPORTED": {
+        "fpr": [
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          1.0
+        ],
+        "thresholds": [
+          Infinity,
+          0.0
+        ]
+      },
+      "CONTRADICTED": {
+        "fpr": [
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          1.0
+        ],
+        "thresholds": [
+          Infinity,
+          0.0
+        ]
+      },
+      "UNVERIFIED": {
+        "fpr": [
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          1.0
+        ],
+        "thresholds": [
+          Infinity,
+          0.0
+        ]
+      }
+    }
+  },
+  "baseline_test_metrics": {
+    "confusion_matrix": [
+      [
+        18,
+        0,
+        13
+      ],
+      [
+        11,
+        14,
+        7
+      ],
+      [
+        2,
+        0,
+        19
+      ]
+    ],
+    "labels": [
+      "SUPPORTED",
+      "CONTRADICTED",
+      "UNVERIFIED"
+    ],
+    "accuracy": 0.6071,
+    "macro_precision": 0.6893,
+    "macro_recall": 0.641,
+    "macro_f1": 0.6076,
+    "weighted_precision": 0.717,
+    "weighted_recall": 0.6071,
+    "weighted_f1": 0.6045,
+    "micro_precision": 0.6071,
+    "micro_recall": 0.6071,
+    "micro_f1": 0.6071,
+    "per_class": {
+      "SUPPORTED": {
+        "precision": 0.5806,
+        "recall": 0.5806,
+        "f1": 0.5806,
+        "support": 31
+      },
+      "CONTRADICTED": {
+        "precision": 1.0,
+        "recall": 0.4375,
+        "f1": 0.6087,
+        "support": 32
+      },
+      "UNVERIFIED": {
+        "precision": 0.4872,
+        "recall": 0.9048,
+        "f1": 0.6333,
+        "support": 21
+      }
+    },
+    "roc_auc": {
+      "multiclass_macro_ovr": 0.5,
+      "multiclass_weighted_ovr": 0.5,
+      "auc_supported": 0.5,
+      "auc_contradicted": 0.5,
+      "auc_unverified": 0.5
+    },
+    "roc_curves": {
+      "SUPPORTED": {
+        "fpr": [
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          1.0
+        ],
+        "thresholds": [
+          Infinity,
+          0.0
+        ]
+      },
+      "CONTRADICTED": {
+        "fpr": [
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          1.0
+        ],
+        "thresholds": [
+          Infinity,
+          0.0
+        ]
+      },
+      "UNVERIFIED": {
+        "fpr": [
+          0.0,
+          1.0
+        ],
+        "tpr": [
+          0.0,
+          1.0
+        ],
+        "thresholds": [
+          Infinity,
+          0.0
+        ]
+      }
+    }
+  },
+  "retrieval_metrics": {
+    "recall@1": 0.5,
+    "recall@5": 1.0,
+    "recall@10": 1.0,
+    "mrr": 0.7,
+    "total_queries": 10.0
+  },
+  "figures_generated": [
+    "reports\\figures\\confusion_matrix.png",
+    "reports\\figures\\roc_curves.png",
+    "reports\\figures\\calibration_grid.png",
+    "reports\\figures\\retrieval_performance.png"
+  ]
+}

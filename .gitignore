@@ -43,5 +43,6 @@ coverage.xml
 Thumbs.db
 
 # Data & vector stores
-data/
+data/*
+!data/eval/
 *.joblib

@@ -1,0 +1,362 @@
+[
+  {
+    "id": "halu_sup_01",
+    "claim": "The Turing test is a test of a machine's ability to exhibit intelligent behavior equivalent to a human.",
+    "premise": "The Turing test, originally called the imitation game, tests whether a computer can exhibit human-like intelligence.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_02",
+    "claim": "Deep neural networks learn hierarchical representations from raw input features.",
+    "premise": "Deep learning models compose multiple linear and non-linear processing layers to learn representations of data with multiple levels of abstraction.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_03",
+    "claim": "Gradient descent minimizes the objective loss function by iteratively updating model parameters.",
+    "premise": "Gradient descent is a first-order optimization algorithm used to find a local minimum of a differentiable function by taking steps proportional to the negative gradient.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_04",
+    "claim": "Transformer architectures rely on multi-head self-attention mechanisms to model token dependencies.",
+    "premise": "The Transformer is a deep learning architecture that dispenses with recurrence and relies entirely on attention mechanisms to compute representations of input and output.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_05",
+    "claim": "Cross-entropy loss measures the performance of a classification model whose output is a probability value.",
+    "premise": "Cross-entropy loss quantifies the difference between two probability distributions for a given random variable.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_06",
+    "claim": "Backpropagation computes the gradient of the loss function with respect to the weights of the network.",
+    "premise": "Backpropagation efficiently computes the gradient of an objective function with respect to the parameters of a multi-layer neural network using the chain rule.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_07",
+    "claim": "Convolutional layers apply kernel filters across spatial dimensions of input tensors.",
+    "premise": "Convolutional neural networks apply sliding convolution kernels over grid-like topologies such as images.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_08",
+    "claim": "Overfitting occurs when a statistical model fits noise in the training dataset rather than the underlying distribution.",
+    "premise": "Overfitting is the production of an analysis that corresponds too closely to a particular set of data, failing to generalize reliably to new observations.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_09",
+    "claim": "Precision represents the fraction of relevant instances among the retrieved instances.",
+    "premise": "In pattern recognition, precision is the number of true positive results divided by the number of all positive results, including false positives.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_10",
+    "claim": "Recall represents the fraction of relevant instances that were successfully retrieved.",
+    "premise": "Recall is the fraction of the total amount of relevant instances that were actually retrieved.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_11",
+    "claim": "F1 score is the harmonic mean of precision and recall.",
+    "premise": "The F-score or F1-measure is the harmonic mean of precision and recall.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_12",
+    "claim": "FastAPI is a modern web framework for building APIs with Python based on standard type hints.",
+    "premise": "FastAPI is a modern, fast web framework for building APIs with Python 3.8+ based on standard Python type hints.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_13",
+    "claim": "Pydantic performs data validation and settings management using Python type annotations.",
+    "premise": "Pydantic is a data validation library for Python using standard Python type annotations.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_14",
+    "claim": "Qdrant is a vector similarity search engine and vector database.",
+    "premise": "Qdrant is a vector database and vector search engine written in Rust for nearest-neighbor similarity search.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_15",
+    "claim": "BM25 is a ranking function used by search engines to estimate the relevance of documents to a search query.",
+    "premise": "Okapi BM25 is a bag-of-words retrieval function that ranks a set of documents based on the query terms appearing in each document.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_16",
+    "claim": "Softmax converts a vector of K real numbers into a probability distribution of K probabilities.",
+    "premise": "The softmax function takes as input a vector of K real numbers and normalizes it into a probability distribution proportional to the exponentials of the input numbers.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_17",
+    "claim": "NLTK is a suite of libraries and programs for symbolic and statistical natural language processing.",
+    "premise": "The Natural Language Toolkit (NLTK) is a suite of libraries for Python that supports research and teaching in NLP.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_18",
+    "claim": "DeBERTa improves BERT and RoBERTa using disentangled attention mechanisms.",
+    "premise": "DeBERTa uses disentangled attention and an enhanced mask decoder to advance performance on NLU benchmarks.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_19",
+    "claim": "Reciprocal Rank Fusion merges multiple ranked lists by summing reciprocal rank scores.",
+    "premise": "Reciprocal Rank Fusion (RRF) is an algorithm that evaluates rank positions across multiple search runs and sums 1/(k+rank) scores.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_20",
+    "claim": "Cosine similarity measures the cosine of the angle between two non-zero vectors in an inner product space.",
+    "premise": "Cosine similarity is a metric used to determine how similar documents or vector embeddings are regardless of their size.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_21",
+    "claim": "Quantization reduces the precision of model weights from 16-bit floats to lower-bit representations.",
+    "premise": "Quantization in deep learning maps high-precision floating point parameters to lower-precision bit representations.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_22",
+    "claim": "HTTP Server-Sent Events allow a server to push real-time updates over a single long-lived HTTP connection.",
+    "premise": "Server-Sent Events (SSE) enable a web page to handle an ongoing stream of text events over a persistent HTTP connection.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_23",
+    "claim": "A ROC curve plots the true positive rate against the false positive rate at various threshold settings.",
+    "premise": "A receiver operating characteristic curve is a graphical plot illustrating the diagnostic ability of a binary classifier system as its discrimination threshold is varied.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_24",
+    "claim": "The area under the ROC curve measures two-dimensional area underneath the entire ROC curve from (0,0) to (1,1).",
+    "premise": "ROC-AUC provides an aggregate measure of performance across all possible classification thresholds.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_sup_25",
+    "claim": "Mean Reciprocal Rank evaluates systems that produce a list of possible responses to a sample of queries.",
+    "premise": "Mean Reciprocal Rank is a statistical measure for evaluating any process that produces a ranked list of candidate answers.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "halu_con_01",
+    "claim": "The Turing test was introduced by Charles Babbage in 1842.",
+    "premise": "The Turing test was introduced by British mathematician and computer scientist Alan Turing in 1950.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_02",
+    "claim": "Deep neural networks are strictly linear models that cannot approximate non-linear functions.",
+    "premise": "Deep neural networks use non-linear activation functions that enable them to approximate complex non-linear functions according to universal approximation theorems.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_03",
+    "claim": "Gradient descent maximizes loss functions by adding the gradient directly to parameters.",
+    "premise": "Gradient descent minimizes loss functions by subtracting steps proportional to the gradient.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_04",
+    "claim": "Transformers require recursive recurrent loops to compute hidden state representations.",
+    "premise": "Transformers dispense entirely with recurrence and rely on self-attention mechanisms without recurrent loops.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_05",
+    "claim": "Cross-entropy loss outputs negative infinite numbers for perfect predictions.",
+    "premise": "Cross-entropy loss approaches zero as the predicted probability of the true class approaches one.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_06",
+    "claim": "Backpropagation was proven mathematically impossible by David Rumelhart in 1986.",
+    "premise": "David Rumelhart, Geoffrey Hinton, and Ronald Williams popularized backpropagation in 1986 as an effective training method.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_07",
+    "claim": "Convolutional layers only work on one-dimensional text strings and cannot process 2D images.",
+    "premise": "Convolutional layers are specifically designed for 2D image topologies and grid-like feature maps.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_08",
+    "claim": "Overfitting guarantees superior generalization on unseen test datasets.",
+    "premise": "Overfitting causes models to memorize training idiosyncrasies, leading to poor generalization on unseen test datasets.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_09",
+    "claim": "Precision is computed by dividing false positives by the total number of negative samples.",
+    "premise": "Precision is computed as true positives divided by the sum of true positives and false positives.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_10",
+    "claim": "Recall ignores true positive instances and only counts false negatives.",
+    "premise": "Recall is calculated as true positives divided by the sum of true positives and false negatives.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_11",
+    "claim": "F1 score is calculated as the arithmetic sum of precision and recall multiplied by ten.",
+    "premise": "F1 score is the harmonic mean of precision and recall: 2 * (P * R) / (P + R).",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_12",
+    "claim": "FastAPI is a proprietary C++ operating system kernel developed by Oracle.",
+    "premise": "FastAPI is an open-source Python web framework for building APIs.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_13",
+    "claim": "Pydantic is a hardware circuit simulator designed exclusively for Fortran 77.",
+    "premise": "Pydantic is a Python data validation and parsing library using type hints.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_14",
+    "claim": "Qdrant is a relational database management system using SQL tables with no vector support.",
+    "premise": "Qdrant is a specialized vector database and similarity search engine.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_15",
+    "claim": "BM25 was developed in 1890 as a mechanical sorting algorithm for punch cards.",
+    "premise": "BM25 was developed in the 1970s and 1980s by Stephen Robertson and Karen Sparck Jones for probabilistic text retrieval.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_16",
+    "claim": "Softmax produces output vectors where all probabilities sum to negative one.",
+    "premise": "The softmax function produces a probability distribution whose components always sum to positive 1.0.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_17",
+    "claim": "NLTK is an encrypted peer-to-peer cryptocurrency blockchain protocol.",
+    "premise": "NLTK is a natural language processing library for Python.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_18",
+    "claim": "DeBERTa relies on quantum computing qubits to run natural language inference.",
+    "premise": "DeBERTa is a transformer-based neural network model executing on standard GPU and CPU architectures.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_19",
+    "claim": "Reciprocal Rank Fusion multiplies search rank indices by negative infinity.",
+    "premise": "Reciprocal Rank Fusion computes positive scores using 1/(k + r) to merge search rankings.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_20",
+    "claim": "Cosine similarity between identical unit vectors is always minus one.",
+    "premise": "The cosine similarity between two identical vectors is exactly positive 1.0.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_21",
+    "claim": "Quantization increases memory usage by expanding weights to 128-bit floating point format.",
+    "premise": "Quantization reduces memory footprint by compressing floating point weights into 8-bit or 4-bit integers.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_22",
+    "claim": "Server-Sent Events require opening fifty concurrent WebSocket connections per user.",
+    "premise": "Server-Sent Events operate over a single persistent unidirectional HTTP connection.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_23",
+    "claim": "A ROC curve always plots training loss on the x-axis and learning rate on the y-axis.",
+    "premise": "A ROC curve plots False Positive Rate on the x-axis and True Positive Rate on the y-axis.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_24",
+    "claim": "A random classifier has a theoretical ROC-AUC of 1.0.",
+    "premise": "A completely random classifier has an expected ROC-AUC of 0.50.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_con_25",
+    "claim": "Mean Reciprocal Rank outputs scores between 100 and 10,000 for relevant documents.",
+    "premise": "Mean Reciprocal Rank produces a normalized score between 0.0 and 1.0.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "halu_unv_01",
+    "claim": "Alan Turing preferred raspberry pie while writing the 1950 Mind paper.",
+    "premise": "Alan Turing proposed the Turing test in his 1950 paper Computing Machinery and Intelligence.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_02",
+    "claim": "Geoffrey Hinton owns an antique collection of blue fountain pens.",
+    "premise": "Geoffrey Hinton is an influential computer scientist celebrated for his contributions to neural networks.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_03",
+    "claim": "The first neural network had eight secret copper levers hidden inside its chassis.",
+    "premise": "Early neural network implementations were built using analog components in the mid-twentieth century.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_04",
+    "claim": "The Attention Is All You Need authors wrote the initial paper draft on yellow napkins.",
+    "premise": "The seminal paper Attention Is All You Need was presented at NeurIPS in 2017.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_05",
+    "claim": "Python was named after an ancient mythological mountain serpent.",
+    "premise": "Guido van Rossum chose the name Python while reading published scripts from Monty Python's Flying Circus.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_06",
+    "claim": "Qdrant's mascot rabbit runs exactly 42 miles every morning.",
+    "premise": "Qdrant is an open-source vector search database engine.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_07",
+    "claim": "FastAPI's creator drinks precisely three cups of chamomile tea before releasing minor versions.",
+    "premise": "FastAPI is a Python web framework built on Starlette and Pydantic.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_08",
+    "claim": "The term hallucination was coined by ancient Babylonian mathematicians.",
+    "premise": "In generative AI, hallucination refers to plausible-sounding outputs that conflict with established facts.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_09",
+    "claim": "The BM25 formula was secretly engraved on an ivory pendant.",
+    "premise": "BM25 is a widely used document ranking algorithm in information retrieval.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "halu_unv_10",
+    "claim": "The DeBERTa checkpoint was downloaded by alien researchers on Mars.",
+    "premise": "DeBERTa-v3 is an advanced transformer cross-encoder trained on natural language inference pairs.",
+    "label": "UNVERIFIED"
+  }
+]

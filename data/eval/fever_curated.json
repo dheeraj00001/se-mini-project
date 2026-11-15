@@ -1,0 +1,362 @@
+[
+  {
+    "id": "fever_sup_01",
+    "claim": "The Eiffel Tower is located in Paris, France.",
+    "premise": "The Eiffel Tower is a wrought-iron lattice tower on the Champ de Mars in Paris, France.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_02",
+    "claim": "Apollo 11 landed humans on the Moon in July 1969.",
+    "premise": "Apollo 11 was the American spaceflight that first landed humans on the Moon on July 20, 1969.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_03",
+    "claim": "Python was created by Guido van Rossum.",
+    "premise": "Python is a high-level programming language conceived in the late 1980s by Guido van Rossum.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_04",
+    "claim": "Water boils at 100 degrees Celsius at standard atmospheric pressure.",
+    "premise": "At standard atmospheric pressure, the boiling point of pure water is 100 degrees Celsius.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_05",
+    "claim": "DNA has a double helix structure.",
+    "premise": "The molecular structure of DNA is a double helix composed of two complementary strands.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_06",
+    "claim": "Photosynthesis converts carbon dioxide into glucose and oxygen.",
+    "premise": "Photosynthesis is the process by which green plants synthesize glucose from carbon dioxide and water.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_07",
+    "claim": "Mount Everest is the highest mountain above sea level.",
+    "premise": "Mount Everest is Earth's highest mountain above sea level, located in the Mahalangur Himal sub-range of the Himalayas.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_08",
+    "claim": "The human heart contains four chambers.",
+    "premise": "The internal cavity of the human heart is divided into four chambers: two atria and two ventricles.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_09",
+    "claim": "The Pacific Ocean is the largest ocean on Earth.",
+    "premise": "The Pacific Ocean is the largest and deepest of Earth's five oceanic divisions.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_10",
+    "claim": "Light travels faster than sound in air.",
+    "premise": "Light travels at roughly 300,000 kilometers per second, vastly exceeding the speed of sound.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_11",
+    "claim": "The Great Wall of China is located in northern China.",
+    "premise": "The Great Wall of China is a series of fortifications built across the historical northern borders of ancient Chinese states.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_12",
+    "claim": "Albert Einstein developed the theory of general relativity.",
+    "premise": "General relativity is a theory of gravitation developed by Albert Einstein between 1907 and 1915.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_13",
+    "claim": "The chemical symbol for gold is Au.",
+    "premise": "Gold is a chemical element with symbol Au from Latin aurum and atomic number 79.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_14",
+    "claim": "Oxygen is necessary for cellular respiration in aerobic organisms.",
+    "premise": "Aerobic respiration requires oxygen in order to generate ATP through oxidative phosphorylation.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_15",
+    "claim": "The Nile River is located on the African continent.",
+    "premise": "The Nile is a major north-flowing river in northeastern Africa.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_16",
+    "claim": "William Shakespeare wrote Hamlet.",
+    "premise": "The Tragedy of Hamlet, Prince of Denmark is a tragedy written by William Shakespeare.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_17",
+    "claim": "The Roman Empire was centered around the Mediterranean Sea.",
+    "premise": "The Roman Empire controlled extensive territorial holdings around the Mediterranean Sea.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_18",
+    "claim": "Jupiter is the largest planet in the Solar System.",
+    "premise": "Jupiter is the fifth planet from the Sun and the largest in the Solar System.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_19",
+    "claim": "Alexander Fleming discovered penicillin in 1928.",
+    "premise": "In 1928 Scottish physician Alexander Fleming discovered penicillin at St Mary's Hospital in London.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_sup_20",
+    "claim": "The United Nations was established in 1945.",
+    "premise": "The United Nations is an intergovernmental organization established on 24 October 1945.",
+    "label": "SUPPORTED"
+  },
+  {
+    "id": "fever_ref_01",
+    "claim": "Berlin is the capital of France.",
+    "premise": "Paris is the official capital and most populous city of France.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_02",
+    "claim": "Apollo 11 landed humans on Mars in 1969.",
+    "premise": "Apollo 11 landed humans on the Moon on July 20, 1969; no human mission has landed on Mars.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_03",
+    "claim": "Java was created by Guido van Rossum.",
+    "premise": "Java was originally developed by James Gosling at Sun Microsystems; Python was created by Guido van Rossum.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_04",
+    "claim": "Water boils at 50 degrees Celsius at sea level.",
+    "premise": "At sea level under 1 atmosphere pressure, water boils at 100 degrees Celsius, not 50 degrees.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_05",
+    "claim": "World War II ended in 1935.",
+    "premise": "World War II ended on September 2, 1945 following the formal surrender of Japan.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_06",
+    "claim": "The Titanic sank in 1980.",
+    "premise": "The RMS Titanic sank on April 15, 1912 after colliding with an iceberg in the North Atlantic.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_07",
+    "claim": "Albert Einstein published General Relativity in 1820.",
+    "premise": "Albert Einstein completed and presented his general theory of relativity in November 1915.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_08",
+    "claim": "Charles Dickens wrote Romeo and Juliet.",
+    "premise": "Romeo and Juliet is a tragedy written by William Shakespeare early in his career, not Charles Dickens.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_09",
+    "claim": "The American Declaration of Independence was signed in 1910.",
+    "premise": "The United States Declaration of Independence was adopted by the Second Continental Congress in July 1776.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_10",
+    "claim": "The Pacific Ocean is smaller than the Arctic Ocean.",
+    "premise": "The Pacific Ocean is the largest ocean on Earth; the Arctic Ocean is the smallest.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_11",
+    "claim": "Mount Everest is located in the Andes mountain range.",
+    "premise": "Mount Everest is located in the Himalayas on the border of Nepal and China, not the Andes.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_12",
+    "claim": "The Mona Lisa was painted by Pablo Picasso.",
+    "premise": "The Mona Lisa is an Italian Renaissance portrait painted by Leonardo da Vinci.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_13",
+    "claim": "The human heart has only two chambers.",
+    "premise": "The mammalian human heart possesses exactly four distinct chambers.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_14",
+    "claim": "Isaac Newton discovered penicillin.",
+    "premise": "Penicillin was discovered by Scottish scientist Alexander Fleming; Newton formulated classical mechanics.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_15",
+    "claim": "Sound travels faster in air than light does in vacuum.",
+    "premise": "The speed of light in vacuum is nearly one million times faster than the speed of sound in air.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_16",
+    "claim": "The Berlin Wall fell in 1961.",
+    "premise": "The Berlin Wall was constructed in 1961 and fell on November 9, 1989.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_17",
+    "claim": "Mars is the largest planet in our solar system.",
+    "premise": "Jupiter is the largest planet in our solar system; Mars is significantly smaller.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_18",
+    "claim": "The Magna Carta was signed in 1945.",
+    "premise": "The Magna Carta was granted by King John of England at Runnymede in June 1215.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_19",
+    "claim": "Thomas Edison invented the telephone.",
+    "premise": "Alexander Graham Bell was awarded the first U.S. patent for the telephone in 1876.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_ref_20",
+    "claim": "Dmitri Mendeleev formulated the theory of biological evolution.",
+    "premise": "Charles Darwin formulated the theory of evolution; Mendeleev created the Periodic Table.",
+    "label": "CONTRADICTED"
+  },
+  {
+    "id": "fever_nei_01",
+    "claim": "Guido van Rossum preferred tea over coffee while writing Python.",
+    "premise": "Python is a programming language conceived in the late 1980s by Guido van Rossum.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_02",
+    "claim": "Apollo 11 astronauts carried a secret four-leaf clover in their pockets.",
+    "premise": "Apollo 11 landed humans on the Moon on July 20, 1969.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_03",
+    "claim": "The Eiffel Tower receives exactly 1,234,567 visitors on rainy Tuesdays.",
+    "premise": "The Eiffel Tower is a wrought-iron lattice tower located in Paris, France.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_04",
+    "claim": "Dolphins have secret conversations in underwater Morse code.",
+    "premise": "Marine mammals such as dolphins use echolocation and clicks for navigation and hunting.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_05",
+    "claim": "Dr. Johnathan Vance proved in 2024 that coffee cures gravity.",
+    "premise": "Coffee is a popular brewed beverage made from roasted coffee beans.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_06",
+    "claim": "Mount Everest was named after a legendary mountain climbing goat.",
+    "premise": "Mount Everest is Earth's highest peak located in the Himalayas.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_07",
+    "claim": "Albert Einstein preferred mechanical pocket watches with red dials.",
+    "premise": "Albert Einstein was a German-born theoretical physicist widely acknowledged for relativity.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_08",
+    "claim": "William Shakespeare wrote Hamlet while sitting under an oak tree in Yorkshire.",
+    "premise": "The Tragedy of Hamlet is a renowned play written by William Shakespeare.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_09",
+    "claim": "The lost civilization of Lemuria possessed supersonic sailing vessels.",
+    "premise": "Sailing vessels have navigated terrestrial oceans since antiquity.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_10",
+    "claim": "The Pacific Ocean contains an undiscovered underwater emerald palace.",
+    "premise": "The Pacific Ocean is the largest ocean on planet Earth.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_11",
+    "claim": "Leonardo da Vinci finished the Mona Lisa in exactly twenty-three days.",
+    "premise": "The Mona Lisa is a Renaissance painting created by Leonardo da Vinci.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_12",
+    "claim": "Alexander Fleming wore emerald green socks when discovering penicillin.",
+    "premise": "Alexander Fleming discovered penicillin at St Mary's Hospital in 1928.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_13",
+    "claim": "The Titanic's captain originally intended to steer towards Greenland.",
+    "premise": "The RMS Titanic sank after striking an iceberg in the North Atlantic in 1912.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_14",
+    "claim": "Photosynthesis produces a pleasant microscopic musical frequency.",
+    "premise": "Photosynthesis converts light energy into chemical energy in green plants.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_15",
+    "claim": "The United Nations charter was signed using pens made from meteorite iron.",
+    "premise": "The United Nations was formally established in 1945.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_16",
+    "claim": "Jupiter's magnetic field plays harmonic tones audible to space whales.",
+    "premise": "Jupiter is the largest planet in our solar system with a strong magnetosphere.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_17",
+    "claim": "DNA strands vibrate at frequencies corresponding to jazz scales.",
+    "premise": "DNA is a molecule composed of two polynucleotide chains in a double helix.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_18",
+    "claim": "Water molecules retain memories of ancient medieval poetry.",
+    "premise": "Water consists of hydrogen and oxygen molecules bonded covalently.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_19",
+    "claim": "The Great Wall of China is embedded with powdered sapphires along its mortar.",
+    "premise": "The Great Wall of China is an ancient fortification constructed across northern China.",
+    "label": "UNVERIFIED"
+  },
+  {
+    "id": "fever_nei_20",
+    "claim": "Julius Caesar spoke fluent Norwegian with his kitchen staff.",
+    "premise": "Julius Caesar was a Roman general and statesman who played a critical role in the Roman Empire.",
+    "label": "UNVERIFIED"
+  }
+]
