@@ -161,6 +161,47 @@ Response:
 }
 ```
 
+### 3. Launch React Frontend (Awwwards-Tier Option B)
+
+The project includes an Awwwards-tier, decoupled React 19 + TypeScript + Vite frontend located in `frontend/`, engineered under the `awwwards-hero-section` (Architecture B: Asymmetric Split) and `awwwards-sections` design pipelines:
+
+```bash
+# Option A: From repository root (recommended)
+npm run frontend:dev
+
+# Option B: From the frontend directory
+cd frontend
+npm run dev
+```
+
+Open **`http://localhost:5173`** in your browser to access the interface.
+
+#### Frontend Capabilities & Architecture
+- **Floating Pill Navigation (`Navbar.tsx`)**: Dynamic heartbeat indicator displaying live FastAPI backend health, status ping, and real-time round-trip latency (`:8000`).
+- **Hero Section (`HeroSection.tsx`)**: Viewport-scale architectural typography (`clamp(2.5rem, 6.2vw, 6.8rem)`, tight `-0.035em` tracking), live claim syntax highlighting, posterior probability meters, and instant rewrite/redact preview.
+- **Interactive Playground (`Playground.tsx`)**:
+  - **Mode 1 (`POST /verify`)**: Interactive proposition segmentation, 3-tier waterfall selector, mitigation mode switcher (`rewrite`, `redact`, `block`, `flag`), claim probability meters, and sanitized text output.
+  - **Mode 2 (`POST /v1/chat/completions`)**: Buffered OpenAI reverse proxy chat completions with synthetic SSE token streaming playback (15ms pacing) and injected verification headers.
+  - **Pre-loaded Presets**: Quick-load benchmark scenarios (Apollo 11 Moon landing vs Mars hallucination, Eiffel Tower height discrepancy, Berlin/Paris capital entity swap, Penicillin discovery).
+- **Waterfall Grounding Engine (`WaterfallDiagram.tsx`)**: Interactive step-by-step resolution flow visualizing Tier 1 In-Context $\to$ Tier 2 Qdrant + BM25 RRF $\to$ Tier 3 External Web Grounding with latency budgets and architectural specifications.
+- **Empirical Benchmark Telemetry (`BenchmarkStats.tsx`)**: High-contrast metric cards (60.71% Accuracy, 0.6076 Macro F1, 100% Contradiction Precision, 0% Token Leakage) and interactive Lightbox Modal viewing all 4 diagnostic evaluation figures from `reports/figures/`.
+- **Developer Integration Tabs (`CodeSnippets.tsx`)**: Copy-pasteable integration code for Python OpenAI SDK, cURL CLI, and TypeScript Fetch.
+- **Offline Simulator**: Seamless fallback when FastAPI is offline, enabling immediate interactive testing and demonstration without neural model loading.
+
+#### Frontend Testing & Build Verification
+```bash
+# Check TypeScript typing and build production bundle
+npm run frontend:build
+# (or from root: npm run frontend:build)
+
+# Run Oxlint / ESLint linter
+npm run frontend:lint
+# (or from root: npm run frontend:lint)
+
+# Preview production build locally
+npm run frontend:preview
+```
+
 ---
 
 ## Knowledge Ingestion (Tier 2 Knowledge Base)
@@ -357,6 +398,21 @@ python scripts/run_benchmark.py --fever-samples 60 --halueval-samples 60 --seed 
 
 ---
 
+## Modular Architecture & Individual Student Contributions (UE24CS341A)
+
+In compliance with PES University Department of Artificial Intelligence and Machine Learning curriculum standards (UE24CS341A), the system is structured into four independent modules with explicit typed boundaries, individual PR deliverables, dedicated unit test suites, and ADR governance (`ADR-0010`):
+
+> For detailed per-student engineering deliverables, code seams, and requirement mappings, refer to [docs/TEAM_CONTRIBUTIONS.md](docs/TEAM_CONTRIBUTIONS.md).
+
+| Student | Functional Role | Owned Subsystem | Key Architecture Deliverables | Code Seams | Test Suites |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Student 1** | **API Gateway & Streaming Architect** | **Module 1**: Gateway & Streaming Proxy Engine | • OpenAI-compatible reverse proxy (`POST /v1/chat/completions`)<br>• Standalone verification sidecar (`POST /verify`)<br>• 100% full response buffering (`ADR-0008`) preventing hallucination leakage<br>• Synthetic SSE replay engine with 15ms pacing (`X-SSE-Pacing-Ms`)<br>• Decoupled React frontend UI scaffolding | `src/gateway/app.py`<br>`src/gateway/buffer.py`<br>`src/gateway/middleware.py`<br>`src/gateway/router.py`<br>`src/gateway/sse.py` | `test_gateway_scaffold.py`<br>`test_reverse_proxy.py`<br>`test_proxy_router.py`<br>`test_sse_replay.py` |
+| **Student 2** | **NLP & Verification Engine Lead** | **Module 2**: Claim Segmentation & NLI Verification | • Deterministic syntactic proposition splitting (`ADR-0004`)<br>• Epistemic hedge detection (e.g. *"I think"*, *"arguably"*)<br>• CPU DeBERTa-v3 cross-encoder classification (`ADR-0005`)<br>• Severe Contradiction Circuit Breaker ($\tau_{severe} \ge 0.85$ trips `is_safe=False`)<br>• Document-level metrics (Hallucination/Verification/Unverified Rates) | `src/verifier/segmenter.py`<br>`src/verifier/nli.py`<br>`src/verifier/orchestrator.py`<br>`src/schemas/verification.py` | `test_claim_segmenter.py`<br>`test_nli_verifier.py`<br>`test_waterfall_e2e.py` |
+| **Student 3** | **Knowledge Systems & Retrieval Lead** | **Module 3**: Hybrid Knowledge Ingestion & Retrieval | • Document parser & token chunker (250–300 tokens, 50-token overlap)<br>• Deterministic SHA-256 chunk identifier synchronization<br>• DualIndexStore (`ADR-0007`: Qdrant dense vector + BM25 keyword store)<br>• Reciprocal Rank Fusion ($k=60$, 100% Recall@10)<br>• 3-Tier Waterfall search (Context $\to$ Local KB $\to$ Web) | `src/retrieval/adapters.py`<br>`src/retrieval/chunker.py`<br>`src/retrieval/embedder.py`<br>`src/retrieval/fusion.py`<br>`src/retrieval/ingest.py`<br>`src/retrieval/store.py` | `test_ingestion.py`<br>`test_retrieval_adapters.py`<br>`test_web_retrieval.py` |
+| **Student 4** | **Mitigation & Evaluation Lead** | **Module 4**: Mitigation & Benchmark Evaluation | • Local 4-bit Gemma 2B instruction model allocation (`ADR-0001`, `ADR-0002`)<br>• Prompt-guided surgical clause rewriter (`ADR-0006`)<br>• Mandatory secondary NLI verification loop & cascade to `redact`/`block`<br>• Tier A CI/CD regression test battery (50 cases in `tests/eval_local_50.py`)<br>• Tier B benchmark runner (`scripts/run_benchmark.py`), calibration grid & metrics | `src/mitigation/generator.py`<br>`src/mitigation/rewriter.py`<br>`src/mitigation/fallback.py`<br>`src/mitigation/pipeline.py`<br>`src/eval/benchmark.py`<br>`src/eval/calibration.py` | `test_targeted_rewriter.py`<br>`test_secondary_verification.py`<br>`test_eval_benchmark.py`<br>`eval_local_50.py` |
+
+---
+
 ## Testing & Quality Verification
 
 Run the full automated test suite (314 unit, integration, streaming, and evaluation tests) with statement and branch coverage:
@@ -389,9 +445,21 @@ black --check src tests scripts/run_benchmark.py
 .
 ├── CONTEXT.md                    # Ubiquitous domain language, acronym definitions & ADRs
 ├── README.md                     # Technical overview, installation & operation guide
+├── package.json                  # Root npm scripts for frontend coordination
 ├── pyproject.toml                # Pytest, coverage, mypy & tool configuration
 ├── requirements.txt              # Core runtime dependencies
 ├── requirements-dev.txt          # Test, lint, and benchmarking dependencies
+├── frontend/                     # Decoupled Awwwards-tier React + Vite + Tailwind CSS frontend
+│   ├── index.html                # Cybernetic dark viewport & typography configuration
+│   ├── package.json              # React 19, Framer Motion, Lucide, Tailwind v4
+│   ├── vite.config.ts            # Vite bundler configuration & backend proxy
+│   ├── public/figures/           # Served diagnostic evaluation figures
+│   └── src/
+│       ├── App.tsx               # Root composition and live health check loop
+│       ├── index.css             # Obsidian theme, ambient radial glows & film grain
+│       ├── components/           # Navbar, HeroSection, Playground, Waterfall, Telemetry, CodeSnippets, Footer
+│       ├── services/api.ts       # Unified API client & offline simulation fallback
+│       └── types/index.ts        # TypeScript schemas matching FastAPI models
 ├── data/
 │   └── eval/                     # Curated FEVER and HaluEval offline benchmark datasets
 ├── docs/                         # Technical documentation & project specifications
