@@ -8,16 +8,22 @@ Implements REQ-RET-04, REQ-RET-05, and ADR-0004:
 """
 
 from abc import ABC, abstractmethod
+import asyncio
 import concurrent.futures
+import logging
 from typing import Any, List, Optional, Sequence, Tuple
 import numpy as np
 from rank_bm25 import BM25Okapi
 
+from src.gateway.middleware import get_server_max_tier
 from src.retrieval.chunker import chunk_text
 from src.retrieval.embedder import BaseEmbedder
 from src.retrieval.fusion import DEFAULT_RRF_K, reciprocal_rank_fusion
+from src.retrieval.parser import compute_content_hash
 from src.retrieval.store import DualIndexStore
 from src.schemas.verification import EvidenceCandidate, EvidenceChunk
+
+logger = logging.getLogger(__name__)
 
 
 def _cosine_similarity(vec_a: Sequence[float], vec_b: Sequence[float]) -> float:
@@ -210,6 +216,172 @@ class Tier2HybridAdapter(BaseRetrievalAdapter):
         return [c.model_copy(update={"tier": 2}) for c in fused]
 
 
+class Tier3WebAdapter(BaseRetrievalAdapter):
+    """Tier 3: Queries live web snippets via DuckDuckGo for external grounding.
+
+    Implements REQ-RET-05, REQ-RET-06, NFR-SEC-01, and ADR-0004.
+    """
+
+    def __init__(
+        self,
+        ddgs_client: Optional[Any] = None,
+        timeout: float = 5.0,
+        server_max_tier: Optional[int] = None,
+        region: Optional[str] = None,
+        safesearch: str = "moderate",
+    ) -> None:
+        """Initialize the Tier 3 DuckDuckGo web retrieval adapter.
+
+        Args:
+            ddgs_client: Optional DuckDuckGo search client (e.g. DDGS instance or mock).
+            timeout: HTTP query timeout in seconds (default: 5.0).
+            server_max_tier: Server-side maximum allowed tier ceiling (default: from env or 3).
+            region: Optional DuckDuckGo search region string (e.g. 'us-en').
+            safesearch: Safesearch level ('on', 'moderate', 'off'; default: 'moderate').
+        """
+        self._ddgs_client = ddgs_client
+        self._timeout = timeout
+        self._server_max_tier = (
+            server_max_tier if server_max_tier is not None else get_server_max_tier()
+        )
+        self._region = region
+        self._safesearch = safesearch
+
+    @property
+    def ddgs_client(self) -> Optional[Any]:
+        """Return the underlying DDGS client instance or mock."""
+        return self._ddgs_client
+
+    @property
+    def timeout(self) -> float:
+        """Return the query timeout in seconds."""
+        return self._timeout
+
+    @property
+    def server_max_tier(self) -> int:
+        """Return the immutable server max tier ceiling."""
+        return self._server_max_tier
+
+    def search(
+        self,
+        claim: str,
+        limit: int = 5,
+        client_max_tier: int = 3,
+        **kwargs: Any,
+    ) -> List[EvidenceChunk]:
+        """Execute DuckDuckGo search for atomic claim proposition.
+
+        Args:
+            claim: Standalone atomic claim query string.
+            limit: Maximum candidate passages to return (default: 5).
+            client_max_tier: Explicit client tier request (must be == 3 to opt in).
+            **kwargs: Additional parameters forwarded to search.
+
+        Returns:
+            Ranked list of EvidenceChunk instances with tier=3 and URL citations.
+        """
+        # Strict opt-in security ceiling checks (REQ-RET-05, REQ-RET-06, NFR-SEC-01)
+        if client_max_tier != 3:
+            logger.debug(
+                "Tier 3 search aborted: client requested tier %d (!= 3)",
+                client_max_tier,
+            )
+            return []
+
+        if self._server_max_tier < 3:
+            logger.warning(
+                "Tier 3 search blocked: server max tier ceiling is %d (< 3)",
+                self._server_max_tier,
+            )
+            return []
+
+        cleaned_claim = claim.strip()
+        if not cleaned_claim:
+            return []
+
+        try:
+            if self._ddgs_client is not None:
+                client = self._ddgs_client
+            else:
+                from duckduckgo_search import DDGS
+
+                client = DDGS(timeout=int(self._timeout))
+
+            raw_results = client.text(
+                keywords=cleaned_claim,
+                max_results=limit,
+                region=self._region,
+                safesearch=self._safesearch,
+            )
+        except Exception as exc:
+            # Graceful degradation on rate limits, timeouts, or network disconnects
+            logger.warning(
+                "DuckDuckGo search error for claim '%s': %s",
+                cleaned_claim,
+                exc,
+            )
+            return []
+
+        if not raw_results:
+            return []
+
+        chunks: List[EvidenceChunk] = []
+        for idx, item in enumerate(raw_results):
+            if not isinstance(item, dict):
+                continue
+            body = str(item.get("body") or item.get("snippet") or "").strip()
+            title = str(item.get("title") or "").strip()
+            href = str(item.get("href") or item.get("link") or "").strip()
+
+            if body and title:
+                snippet_text = f"{title}: {body}"
+            elif body:
+                snippet_text = body
+            elif title:
+                snippet_text = title
+            else:
+                continue
+
+            source_doc = href if href else f"duckduckgo_search_{idx + 1}"
+            chunk_id = compute_content_hash(f"{source_doc}:{snippet_text}")
+            score = round(1.0 / (idx + 1), 4)
+
+            chunk = EvidenceChunk(
+                chunk_id=chunk_id,
+                text=snippet_text,
+                source_doc=source_doc,
+                tier=3,
+                score=score,
+                metadata={
+                    "url": href,
+                    "title": title,
+                    "source": "duckduckgo",
+                    "rank": idx + 1,
+                },
+            )
+            chunks.append(chunk)
+            if len(chunks) >= limit:
+                break
+
+        return chunks
+
+    async def asearch(
+        self,
+        claim: str,
+        limit: int = 5,
+        client_max_tier: int = 3,
+        **kwargs: Any,
+    ) -> List[EvidenceChunk]:
+        """Asynchronously execute DuckDuckGo search on a worker thread."""
+        return await asyncio.to_thread(
+            self.search,
+            claim=claim,
+            limit=limit,
+            client_max_tier=client_max_tier,
+            **kwargs,
+        )
+
+
 class RetrievalAdapter:
     """Unified retrieval gateway routing requests to Tier 1, 2, or 3 adapters."""
 
@@ -217,14 +389,21 @@ class RetrievalAdapter:
         self,
         tier1_adapter: Optional[Tier1ContextAdapter] = None,
         tier2_adapter: Optional[Tier2HybridAdapter] = None,
+        tier3_adapter: Optional[Tier3WebAdapter] = None,
         store: Optional[DualIndexStore] = None,
         embedder: Optional[BaseEmbedder] = None,
+        server_max_tier: Optional[int] = None,
     ) -> None:
         self._tier1 = (
             tier1_adapter if tier1_adapter is not None else Tier1ContextAdapter(embedder=embedder)
         )
         self._tier2 = (
             tier2_adapter if tier2_adapter is not None else Tier2HybridAdapter(store=store)
+        )
+        self._tier3 = (
+            tier3_adapter
+            if tier3_adapter is not None
+            else Tier3WebAdapter(server_max_tier=server_max_tier)
         )
 
     @property
@@ -236,6 +415,11 @@ class RetrievalAdapter:
     def tier2_adapter(self) -> Tier2HybridAdapter:
         """Return the Tier 2 Hybrid Adapter."""
         return self._tier2
+
+    @property
+    def tier3_adapter(self) -> Tier3WebAdapter:
+        """Return the Tier 3 Web Adapter."""
+        return self._tier3
 
     def search(
         self,
@@ -276,13 +460,54 @@ class RetrievalAdapter:
                 **kwargs,
             )
         else:
-            # Tier 3 (External Web Search) is implemented in Sprint 2 (Ticket 09)
-            return []
+            client_tier = kwargs.pop("client_max_tier", 3)
+            return self._tier3.search(
+                claim=claim,
+                limit=limit,
+                client_max_tier=client_tier,
+                **kwargs,
+            )
+
+    async def asearch(
+        self,
+        claim: str,
+        tier: int = 2,
+        context_docs: Optional[Sequence[str]] = None,
+        limit: int = 5,
+        **kwargs: Any,
+    ) -> List[EvidenceCandidate]:
+        """Asynchronously search evidence candidates across the specified tier."""
+        if tier not in (1, 2, 3):
+            raise ValueError(f"Invalid retrieval tier: {tier}. Must be between 1 and 3.")
+
+        if tier == 3:
+            client_tier = kwargs.pop("client_max_tier", 3)
+            return await self._tier3.asearch(
+                claim=claim,
+                limit=limit,
+                client_max_tier=client_tier,
+                **kwargs,
+            )
+        return await asyncio.to_thread(
+            self.search,
+            claim=claim,
+            tier=tier,
+            context_docs=context_docs,
+            limit=limit,
+            **kwargs,
+        )
 
 
 def get_retrieval_adapter(
     store: Optional[DualIndexStore] = None,
     embedder: Optional[BaseEmbedder] = None,
+    tier3_adapter: Optional[Tier3WebAdapter] = None,
+    server_max_tier: Optional[int] = None,
 ) -> RetrievalAdapter:
     """Factory helper to instantiate a configured RetrievalAdapter."""
-    return RetrievalAdapter(store=store, embedder=embedder)
+    return RetrievalAdapter(
+        store=store,
+        embedder=embedder,
+        tier3_adapter=tier3_adapter,
+        server_max_tier=server_max_tier,
+    )

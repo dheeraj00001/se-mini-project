@@ -14,7 +14,9 @@ Core Responsibilities:
 5. Comprehensive schema-compliant VerificationResponse compilation.
 """
 
-from typing import Any, List, Optional, cast
+import logging
+from typing import Any, List, Optional, Sequence, cast
+from src.gateway.middleware import get_server_max_tier
 from src.retrieval.adapters import (
     RetrievalAdapter,
     get_retrieval_adapter,
@@ -22,7 +24,9 @@ from src.retrieval.adapters import (
 from src.retrieval.store import DualIndexStore
 from src.schemas.verification import (
     ClaimReport,
+    ClaimSegment,
     ClaimState,
+    EvidenceChunk,
     MitigationMode,
     VerificationRequest,
     VerificationResponse,
@@ -35,6 +39,8 @@ from src.verifier.nli import (
     get_nli_verifier,
 )
 from src.verifier.segmenter import ClaimSegmenter
+
+logger = logging.getLogger(__name__)
 
 
 class WaterfallOrchestrator:
@@ -49,13 +55,17 @@ class WaterfallOrchestrator:
         entailment_threshold: float = 0.70,
         contradiction_threshold: float = 0.70,
         severe_contradiction_threshold: float = 0.85,
-        server_max_tier: int = 3,
+        server_max_tier: Optional[int] = None,
         top_k_per_tier: int = 3,
         rewriter: Optional[Any] = None,
         mitigation_pipeline: Optional[Any] = None,
         enable_mitigation: bool = True,
         raise_on_block: bool = True,
     ) -> None:
+        self._server_max_tier = (
+            server_max_tier if server_max_tier is not None else get_server_max_tier()
+        )
+
         if store is not None:
             self._store = store
         elif (
@@ -70,14 +80,13 @@ class WaterfallOrchestrator:
         self._retrieval_adapter = (
             retrieval_adapter
             if retrieval_adapter is not None
-            else get_retrieval_adapter(store=self._store)
+            else get_retrieval_adapter(store=self._store, server_max_tier=self._server_max_tier)
         )
         self._nli_verifier = nli_verifier if nli_verifier is not None else get_nli_verifier()
         self._segmenter = segmenter if segmenter is not None else ClaimSegmenter()
         self._entailment_threshold = entailment_threshold
         self._contradiction_threshold = contradiction_threshold
         self._severe_contradiction_threshold = severe_contradiction_threshold
-        self._server_max_tier = server_max_tier
         self._top_k_per_tier = top_k_per_tier
         self._rewriter = rewriter
         self._enable_mitigation = enable_mitigation
@@ -129,6 +138,43 @@ class WaterfallOrchestrator:
         """Return the underlying TargetedRewriter instance."""
         return self._rewriter
 
+    @property
+    def server_max_tier(self) -> int:
+        """Return the server-side maximum retrieval tier ceiling."""
+        return self._server_max_tier
+
+    def _evaluate_chunks_for_claim(
+        self,
+        claim: ClaimSegment,
+        chunks: Sequence[EvidenceChunk],
+        tier: int,
+    ) -> Optional[ClaimReport]:
+        """Evaluate candidate evidence chunks against an atomic claim using NLI."""
+        for chunk in chunks:
+            probs_list = self._nli_verifier.predict_proba([(chunk.text, claim.claim_text)])
+            probs = (
+                probs_list[0]
+                if probs_list
+                else {"contradiction": 0.0, "entailment": 0.0, "neutral": 1.0}
+            )
+            state = determine_claim_state(
+                probabilities=probs,
+                premise_text=chunk.text,
+                entailment_threshold=self._entailment_threshold,
+                contradiction_threshold=self._contradiction_threshold,
+            )
+            if state in (ClaimState.SUPPORTED, ClaimState.CONTRADICTED):
+                return ClaimReport(
+                    claim_id=claim.claim_id,
+                    claim_text=claim.claim_text,
+                    original_sentence=claim.original_sentence,
+                    state=state,
+                    probabilities=probs,
+                    evidence_tier=tier,
+                    evidence_text=chunk.text,
+                )
+        return None
+
     def verify(
         self, request: VerificationRequest, _is_secondary: bool = False
     ) -> VerificationResponse:
@@ -151,7 +197,16 @@ class WaterfallOrchestrator:
 
         # Execute Waterfall loop per claim
         claims_reports: List[ClaimReport] = []
-        effective_max_tier = min(request.max_retrieval_tier, self._server_max_tier)
+        if request.max_retrieval_tier > self._server_max_tier:
+            logger.warning(
+                "Client requested retrieval tier %d exceeding server ceiling %d; capping at %d",
+                request.max_retrieval_tier,
+                self._server_max_tier,
+                self._server_max_tier,
+            )
+            effective_max_tier = self._server_max_tier
+        else:
+            effective_max_tier = request.max_retrieval_tier
 
         for claim in claim_segments:
             claim_text = claim.claim_text
@@ -167,30 +222,7 @@ class WaterfallOrchestrator:
                     context_docs=request.context_documents,
                     limit=self._top_k_per_tier,
                 )
-                for chunk in t1_chunks:
-                    probs_list = self._nli_verifier.predict_proba([(chunk.text, claim_text)])
-                    probs = (
-                        probs_list[0]
-                        if probs_list
-                        else {"contradiction": 0.0, "entailment": 0.0, "neutral": 1.0}
-                    )
-                    state = determine_claim_state(
-                        probabilities=probs,
-                        premise_text=chunk.text,
-                        entailment_threshold=self._entailment_threshold,
-                        contradiction_threshold=self._contradiction_threshold,
-                    )
-                    if state in (ClaimState.SUPPORTED, ClaimState.CONTRADICTED):
-                        decisive_report = ClaimReport(
-                            claim_id=claim.claim_id,
-                            claim_text=claim_text,
-                            original_sentence=claim.original_sentence,
-                            state=state,
-                            probabilities=probs,
-                            evidence_tier=1,
-                            evidence_text=chunk.text,
-                        )
-                        break
+                decisive_report = self._evaluate_chunks_for_claim(claim, t1_chunks, tier=1)
 
             if decisive_report is not None:
                 # Decisive Tier 1 evidence found: SHORT-CIRCUIT!
@@ -206,37 +238,32 @@ class WaterfallOrchestrator:
                     tier=2,
                     limit=self._top_k_per_tier,
                 )
-                for chunk in t2_chunks:
-                    probs_list = self._nli_verifier.predict_proba([(chunk.text, claim_text)])
-                    probs = (
-                        probs_list[0]
-                        if probs_list
-                        else {"contradiction": 0.0, "entailment": 0.0, "neutral": 1.0}
-                    )
-                    state = determine_claim_state(
-                        probabilities=probs,
-                        premise_text=chunk.text,
-                        entailment_threshold=self._entailment_threshold,
-                        contradiction_threshold=self._contradiction_threshold,
-                    )
-                    if state in (ClaimState.SUPPORTED, ClaimState.CONTRADICTED):
-                        decisive_report = ClaimReport(
-                            claim_id=claim.claim_id,
-                            claim_text=claim_text,
-                            original_sentence=claim.original_sentence,
-                            state=state,
-                            probabilities=probs,
-                            evidence_tier=2,
-                            evidence_text=chunk.text,
-                        )
-                        break
+                decisive_report = self._evaluate_chunks_for_claim(claim, t2_chunks, tier=2)
 
             if decisive_report is not None:
                 # Decisive Tier 2 evidence found!
                 claims_reports.append(decisive_report)
                 continue
 
-            # Inconclusive/fallback (will refine in Slice 4)
+            # -------------------------------------------------------------
+            # Tier 3: External Web Search (REQ-RET-05, REQ-RET-06, ADR-0004)
+            # Strict Opt-in: executes ONLY if client_max_tier == 3 AND SERVER_MAX_TIER >= 3
+            # -------------------------------------------------------------
+            if effective_max_tier >= 3 and request.max_retrieval_tier >= 3:
+                t3_chunks = self._retrieval_adapter.search(
+                    claim=claim_text,
+                    tier=3,
+                    limit=self._top_k_per_tier,
+                    client_max_tier=request.max_retrieval_tier,
+                )
+                decisive_report = self._evaluate_chunks_for_claim(claim, t3_chunks, tier=3)
+
+            if decisive_report is not None:
+                # Decisive Tier 3 evidence found!
+                claims_reports.append(decisive_report)
+                continue
+
+            # Inconclusive/fallback across all permitted tiers
             claims_reports.append(
                 ClaimReport(
                     claim_id=claim.claim_id,

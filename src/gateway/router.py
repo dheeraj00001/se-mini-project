@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 from fastapi import APIRouter, HTTPException, Request, status
 from starlette.datastructures import UploadFile
 
+from src.gateway.middleware import apply_header_overrides
 from src.retrieval.ingest import IngestionPipeline
 from src.retrieval.parser import extract_text_from_bytes
 from src.retrieval.store import DualIndexStore
@@ -54,14 +55,17 @@ async def health_check() -> Dict[str, Any]:
     tags=["Verification"],
     summary="Verify factual claims against tiered evidence sources",
 )
-async def verify_endpoint(request: VerificationRequest) -> VerificationResponse:
-    """NLI-aware Waterfall verification sidecar endpoint (REQ-GW-02, REQ-RET-05, REQ-VER-05..06).
+async def verify_endpoint(
+    request: VerificationRequest, raw_request: Request
+) -> VerificationResponse:
+    """NLI-aware Waterfall verification sidecar endpoint (REQ-GW-02, REQ-GW-05, REQ-RET-05..06).
 
     Coordinates deterministic claim segmentation, tiered waterfall retrieval,
     and CPU-based NLI inference to deliver sentence-level reliability metrics.
     """
+    effective_request = apply_header_overrides(request, raw_request.headers)
     orchestrator = get_orchestrator_instance()
-    return orchestrator.verify(request)
+    return orchestrator.verify(effective_request)
 
 
 @router.post(

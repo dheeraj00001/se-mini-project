@@ -20,7 +20,7 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["nltk", "rank_bm25", "fastembed.*", "joblib.*", "sentence_transformers.*"]
+module = ["nltk", "rank_bm25", "fastembed.*", "joblib.*", "sentence_transformers.*", "duckduckgo_search", "duckduckgo_search.*"]
 ignore_missing_imports = true
 
 [tool.coverage.run]

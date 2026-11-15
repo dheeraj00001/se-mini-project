@@ -5,6 +5,7 @@ from src.retrieval.adapters import (
     RetrievalAdapter,
     Tier1ContextAdapter,
     Tier2HybridAdapter,
+    Tier3WebAdapter,
     get_retrieval_adapter,
 )
 from src.retrieval.chunker import chunk_text
@@ -44,6 +45,7 @@ __all__ = [
     "RetrievalAdapter",
     "Tier1ContextAdapter",
     "Tier2HybridAdapter",
+    "Tier3WebAdapter",
     "chunk_text",
     "compute_content_hash",
     "compute_file_hash",
