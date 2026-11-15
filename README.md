@@ -161,6 +161,47 @@ Response:
 }
 ```
 
+### 3. Launch React Frontend (Awwwards-Tier Option B)
+
+The project includes an Awwwards-tier, decoupled React 19 + TypeScript + Vite frontend located in `frontend/`, engineered under the `awwwards-hero-section` (Architecture B: Asymmetric Split) and `awwwards-sections` design pipelines:
+
+```bash
+# Option A: From repository root (recommended)
+npm run frontend:dev
+
+# Option B: From the frontend directory
+cd frontend
+npm run dev
+```
+
+Open **`http://localhost:5173`** in your browser to access the interface.
+
+#### Frontend Capabilities & Architecture
+- **Floating Pill Navigation (`Navbar.tsx`)**: Dynamic heartbeat indicator displaying live FastAPI backend health, status ping, and real-time round-trip latency (`:8000`).
+- **Hero Section (`HeroSection.tsx`)**: Viewport-scale architectural typography (`clamp(2.5rem, 6.2vw, 6.8rem)`, tight `-0.035em` tracking), live claim syntax highlighting, posterior probability meters, and instant rewrite/redact preview.
+- **Interactive Playground (`Playground.tsx`)**:
+  - **Mode 1 (`POST /verify`)**: Interactive proposition segmentation, 3-tier waterfall selector, mitigation mode switcher (`rewrite`, `redact`, `block`, `flag`), claim probability meters, and sanitized text output.
+  - **Mode 2 (`POST /v1/chat/completions`)**: Buffered OpenAI reverse proxy chat completions with synthetic SSE token streaming playback (15ms pacing) and injected verification headers.
+  - **Pre-loaded Presets**: Quick-load benchmark scenarios (Apollo 11 Moon landing vs Mars hallucination, Eiffel Tower height discrepancy, Berlin/Paris capital entity swap, Penicillin discovery).
+- **Waterfall Grounding Engine (`WaterfallDiagram.tsx`)**: Interactive step-by-step resolution flow visualizing Tier 1 In-Context $\to$ Tier 2 Qdrant + BM25 RRF $\to$ Tier 3 External Web Grounding with latency budgets and architectural specifications.
+- **Empirical Benchmark Telemetry (`BenchmarkStats.tsx`)**: High-contrast metric cards (60.71% Accuracy, 0.6076 Macro F1, 100% Contradiction Precision, 0% Token Leakage) and interactive Lightbox Modal viewing all 4 diagnostic evaluation figures from `reports/figures/`.
+- **Developer Integration Tabs (`CodeSnippets.tsx`)**: Copy-pasteable integration code for Python OpenAI SDK, cURL CLI, and TypeScript Fetch.
+- **Offline Simulator**: Seamless fallback when FastAPI is offline, enabling immediate interactive testing and demonstration without neural model loading.
+
+#### Frontend Testing & Build Verification
+```bash
+# Check TypeScript typing and build production bundle
+npm run frontend:build
+# (or from root: npm run frontend:build)
+
+# Run Oxlint / ESLint linter
+npm run frontend:lint
+# (or from root: npm run frontend:lint)
+
+# Preview production build locally
+npm run frontend:preview
+```
+
 ---
 
 ## Knowledge Ingestion (Tier 2 Knowledge Base)
@@ -389,9 +430,21 @@ black --check src tests scripts/run_benchmark.py
 .
 ├── CONTEXT.md                    # Ubiquitous domain language, acronym definitions & ADRs
 ├── README.md                     # Technical overview, installation & operation guide
+├── package.json                  # Root npm scripts for frontend coordination
 ├── pyproject.toml                # Pytest, coverage, mypy & tool configuration
 ├── requirements.txt              # Core runtime dependencies
 ├── requirements-dev.txt          # Test, lint, and benchmarking dependencies
+├── frontend/                     # Decoupled Awwwards-tier React + Vite + Tailwind CSS frontend
+│   ├── index.html                # Cybernetic dark viewport & typography configuration
+│   ├── package.json              # React 19, Framer Motion, Lucide, Tailwind v4
+│   ├── vite.config.ts            # Vite bundler configuration & backend proxy
+│   ├── public/figures/           # Served diagnostic evaluation figures
+│   └── src/
+│       ├── App.tsx               # Root composition and live health check loop
+│       ├── index.css             # Obsidian theme, ambient radial glows & film grain
+│       ├── components/           # Navbar, HeroSection, Playground, Waterfall, Telemetry, CodeSnippets, Footer
+│       ├── services/api.ts       # Unified API client & offline simulation fallback
+│       └── types/index.ts        # TypeScript schemas matching FastAPI models
 ├── data/
 │   └── eval/                     # Curated FEVER and HaluEval offline benchmark datasets
 ├── docs/                         # Technical documentation & project specifications

@@ -1,0 +1,12 @@
+{
+  "name": "dehallucination-gateway",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Real-Time Dual-Mode Hallucination Mitigation & NLI Waterfall Grounding Sidecar for LLM Applications",
+  "scripts": {
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:lint": "npm --prefix frontend run lint",
+    "frontend:preview": "npm --prefix frontend run preview"
+  }
+}
