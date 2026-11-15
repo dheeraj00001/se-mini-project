@@ -10,6 +10,7 @@ Covers RTM Traceability:
 import math
 import time
 from typing import List, Sequence, Tuple
+from unittest.mock import patch
 import pytest
 
 from src.retrieval.adapters import (
@@ -326,9 +327,11 @@ def test_ut_ret_05_unified_retrieval_adapter_routing_and_validation() -> None:
     assert t2_res[0].tier == 2
     assert t2_res[0].chunk_id == "c1"
 
-    # Route Tier 3 (staged for Sprint 2)
-    t3_res = adapter.search("photosynthesis", tier=3)
-    assert t3_res == []
+    # Route Tier 3
+    with patch.object(adapter.tier3_adapter, "search", return_value=[]) as mock_t3_search:
+        t3_res = adapter.search("photosynthesis", tier=3)
+        assert t3_res == []
+        mock_t3_search.assert_called_once()
 
     # Invalid tier out of range [1, 3]
     with pytest.raises(ValueError, match="Invalid retrieval tier"):

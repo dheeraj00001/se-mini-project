@@ -13,7 +13,7 @@ Core Responsibilities:
 from abc import ABC, abstractmethod
 import os
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterator, Optional
 import torch
 
 
@@ -30,6 +30,23 @@ class BaseGenerator(ABC):
     ) -> str:
         """Generate response text given an input prompt."""
         pass
+
+    def generate_stream(
+        self,
+        prompt: str,
+        max_new_tokens: int = 512,
+        temperature: float = 0.0,
+        **kwargs: Any,
+    ) -> Iterator[str]:
+        """Generate response text as an iterable stream of token or word chunks (REQ-GW-03)."""
+        full_text = self.generate(
+            prompt, max_new_tokens=max_new_tokens, temperature=temperature, **kwargs
+        )
+        if not full_text:
+            return
+        words = full_text.split(" ")
+        for i, word in enumerate(words):
+            yield word + (" " if i < len(words) - 1 else "")
 
     @property
     @abstractmethod

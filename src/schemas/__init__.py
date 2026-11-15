@@ -1,6 +1,14 @@
 """Data schemas for inter-module communication."""
 
 from src.schemas.ingestion import IngestionResult, KnowledgeIngestRequest
+from src.schemas.openai import (
+    ChatCompletionChoice,
+    ChatCompletionMessage,
+    ChatCompletionRequest,
+    ChatCompletionResponse,
+    ChatCompletionUsage,
+    ChatMessage,
+)
 from src.schemas.verification import (
     AtomicClaim,
     ClaimReport,
@@ -20,6 +28,12 @@ from src.schemas.verification import (
 
 __all__ = [
     "AtomicClaim",
+    "ChatCompletionChoice",
+    "ChatCompletionMessage",
+    "ChatCompletionRequest",
+    "ChatCompletionResponse",
+    "ChatCompletionUsage",
+    "ChatMessage",
     "ClaimReport",
     "ClaimSegment",
     "ClaimState",

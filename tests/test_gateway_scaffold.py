@@ -61,7 +61,7 @@ def test_ut_gw_01_main_app_instance() -> None:
 
 
 def test_ut_gw_01_chat_completions_proxy_stub(client: TestClient) -> None:
-    """UT_GW_01: Verify POST /v1/chat/completions proxy stub responds cleanly."""
+    """UT_GW_01: Verify POST /v1/chat/completions responds cleanly with OpenAI structure."""
     payload = {
         "model": "google/gemma-4-E4B",
         "messages": [{"role": "user", "content": "Hello"}],
@@ -70,7 +70,12 @@ def test_ut_gw_01_chat_completions_proxy_stub(client: TestClient) -> None:
     assert response.status_code == 200
     data = response.json()
     assert data["object"] == "chat.completion"
-    assert data["choices"][0]["message"]["content"] == "Dehallucination proxy initialized."
+    assert "id" in data
+    assert data["choices"][0]["message"]["role"] == "assistant"
+    assert isinstance(data["choices"][0]["message"]["content"], str)
+    assert data["choices"][0]["finish_reason"] == "stop"
+    assert "X-Dehallucination-Safe" in response.headers
+    assert "X-Hallucination-Rate" in response.headers
 
 
 def test_ut_gw_01_global_exception_handler() -> None:

@@ -10,3 +10,4 @@ fastembed>=0.3.0
 python-multipart>=0.0.9
 sentence-transformers>=6.1.0
 duckduckgo-search>=8.0.0
+openai>=1.0.0
