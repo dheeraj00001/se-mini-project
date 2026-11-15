@@ -402,6 +402,8 @@ python scripts/run_benchmark.py --fever-samples 60 --halueval-samples 60 --seed 
 
 In compliance with PES University Department of Artificial Intelligence and Machine Learning curriculum standards (UE24CS341A), the system is structured into four independent modules with explicit typed boundaries, individual PR deliverables, dedicated unit test suites, and ADR governance (`ADR-0010`):
 
+> For detailed per-student engineering deliverables, code seams, and requirement mappings, refer to [docs/TEAM_CONTRIBUTIONS.md](docs/TEAM_CONTRIBUTIONS.md).
+
 | Student | Functional Role | Owned Subsystem | Key Architecture Deliverables | Code Seams | Test Suites |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Student 1** | **API Gateway & Streaming Architect** | **Module 1**: Gateway & Streaming Proxy Engine | • OpenAI-compatible reverse proxy (`POST /v1/chat/completions`)<br>• Standalone verification sidecar (`POST /verify`)<br>• 100% full response buffering (`ADR-0008`) preventing hallucination leakage<br>• Synthetic SSE replay engine with 15ms pacing (`X-SSE-Pacing-Ms`)<br>• Decoupled React frontend UI scaffolding | `src/gateway/app.py`<br>`src/gateway/buffer.py`<br>`src/gateway/middleware.py`<br>`src/gateway/router.py`<br>`src/gateway/sse.py` | `test_gateway_scaffold.py`<br>`test_reverse_proxy.py`<br>`test_proxy_router.py`<br>`test_sse_replay.py` |
