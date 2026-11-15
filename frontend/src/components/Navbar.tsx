@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldCheck, Activity, Terminal, ArrowUpRight, Cpu, GitBranch } from 'lucide-react';
+import { ShieldCheck, Activity, Terminal, ArrowUpRight, Cpu, GitBranch, Users } from 'lucide-react';
 import type { BackendHealth } from '../types';
 
 interface NavbarProps {
@@ -47,28 +47,35 @@ export const Navbar: React.FC<NavbarProps> = ({ health, onRefreshHealth }) => {
         <div className="hidden md:flex items-center gap-1 lg:gap-2 text-xs font-medium text-slate-300">
           <a
             href="#playground"
-            className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
           >
             <Terminal className="w-3.5 h-3.5 text-emerald-400" />
             Playground
           </a>
           <a
             href="#waterfall"
-            className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
           >
             <Cpu className="w-3.5 h-3.5 text-slate-400" />
-            Waterfall Architecture
+            Waterfall
           </a>
           <a
             href="#telemetry"
-            className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
           >
             <Activity className="w-3.5 h-3.5 text-slate-400" />
-            Benchmark Telemetry
+            Benchmarks
+          </a>
+          <a
+            href="#team"
+            className="px-3 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors flex items-center gap-1.5"
+          >
+            <Users className="w-3.5 h-3.5 text-slate-400" />
+            Team (4 Students)
           </a>
           <a
             href="#integration"
-            className="px-3.5 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors"
+            className="px-3 py-1.5 rounded-full hover:text-white hover:bg-white/5 transition-colors"
           >
             API & SDK
           </a>

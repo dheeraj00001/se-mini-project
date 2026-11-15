@@ -47,6 +47,12 @@ export const Footer: React.FC = () => {
           >
             Benchmarks
           </a>
+          <a
+            href="#team"
+            className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
+          >
+            Team Contributions
+          </a>
           <button
             onClick={scrollToTop}
             className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"

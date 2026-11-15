@@ -5,6 +5,7 @@ import { Playground } from './components/Playground';
 import { WaterfallDiagram } from './components/WaterfallDiagram';
 import { BenchmarkStats } from './components/BenchmarkStats';
 import { CodeSnippets } from './components/CodeSnippets';
+import { TeamContributions } from './components/TeamContributions';
 import { Footer } from './components/Footer';
 import type { BackendHealth } from './types';
 import { checkBackendHealth } from './services/api';
@@ -53,6 +54,9 @@ export const App: React.FC = () => {
 
         {/* Academic Benchmark Telemetry & Figure Lightbox */}
         <BenchmarkStats />
+
+        {/* Modular Team Architecture & 4 Students Contribution Showcase */}
+        <TeamContributions />
 
         {/* Developer Integration Tabs */}
         <CodeSnippets />
