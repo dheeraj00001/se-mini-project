@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-6 text-xs font-mono text-slate-400">
           <a
-            href="https://github.com/Dheeraj-2005"
+            href="https://github.com/dheeraj00001/se-mini-project"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-emerald-400 transition-colors flex items-center gap-1.5"
@@ -59,7 +59,7 @@ export const Footer: React.FC = () => {
 
       <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-slate-400">
         <div>
-          PES University • Department of Computer Science & Engineering • UE24CS341A
+          PES University • Department of Artificial Intelligence and Machine Learning
         </div>
         <div className="flex items-center gap-4">
           <span>Sprint 1 & Sprint 2 Certified</span>

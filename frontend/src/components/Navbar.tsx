@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShieldCheck, Activity, Terminal, ArrowUpRight, Cpu } from 'lucide-react';
+import { ShieldCheck, Activity, Terminal, ArrowUpRight, Cpu, GitBranch } from 'lucide-react';
 import type { BackendHealth } from '../types';
 
 interface NavbarProps {
@@ -38,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ health, onRefreshHealth }) => {
               DEHALLUCINATION <span className="text-emerald-400 font-mono text-[11px] font-semibold">GATEWAY</span>
             </span>
             <span className="text-[10px] font-mono tracking-wider text-slate-400 uppercase">
-              PESU • UE24CS341A
+              PESU • AIML
             </span>
           </div>
         </a>
@@ -75,7 +75,7 @@ export const Navbar: React.FC<NavbarProps> = ({ health, onRefreshHealth }) => {
         </div>
 
         {/* Right action & backend status ping */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <button
             onClick={onRefreshHealth}
             title="Click to re-ping FastAPI backend at http://localhost:8000"
@@ -101,6 +101,16 @@ export const Navbar: React.FC<NavbarProps> = ({ health, onRefreshHealth }) => {
               {health?.isLive ? `Uvicorn :8000 (${health.latencyMs}ms)` : 'FastAPI Offline (Simulator)'}
             </span>
           </button>
+
+          <a
+            href="https://github.com/dheeraj00001/se-mini-project"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-white/5 transition-colors flex items-center justify-center border border-transparent hover:border-white/10"
+            title="View on GitHub"
+          >
+            <GitBranch className="w-4 h-4 text-slate-300 hover:text-emerald-400 transition-colors" />
+          </a>
 
           <a
             href="#playground"
