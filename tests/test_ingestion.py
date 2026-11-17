@@ -725,3 +725,23 @@ def test_embeddinggemma_mock_dispatch_methods() -> None:
     single = embedder.embed_query("single query text")
     assert len(single) == 10
     assert single[0] == 0.9
+
+
+def test_ut_ret_03_ingestion_telemetry(tmp_path: Path) -> None:
+    """Verify IngestionPipeline provides structured ingestion and store telemetry (REQ-RET-03)."""
+    isolated_store = DualIndexStore(
+        in_memory=True,
+        collection_name="telemetry_test",
+        embedder=MockEmbedder(),
+    )
+    pipeline = IngestionPipeline(store=isolated_store, window_size=280, overlap=60)
+    pipeline.ingest_text("Apollo 11 landed humans on the Moon in July 1969.", source_doc="apollo.txt")
+
+    telemetry = pipeline.get_ingestion_telemetry()
+    assert telemetry["window_size"] == 280
+    assert telemetry["overlap"] == 60
+    assert telemetry["collection_name"] == "telemetry_test"
+    assert telemetry["is_in_memory"] is True
+    assert telemetry["indexed_chunks_count"] >= 1
+    assert telemetry["indexed_documents_count"] == 1
+
