@@ -17,6 +17,7 @@ from src.verifier.orchestrator import (
     WaterfallOrchestrator,
     VerificationOrchestrator,
     get_orchestrator,
+    get_verification_telemetry_summary,
 )
 from src.verifier.segmenter import ClaimSegmenter
 
@@ -35,5 +36,6 @@ __all__ = [
     "evaluate_safety_gate",
     "get_nli_verifier",
     "get_orchestrator",
+    "get_verification_telemetry_summary",
     "map_deberta_probabilities",
 ]
