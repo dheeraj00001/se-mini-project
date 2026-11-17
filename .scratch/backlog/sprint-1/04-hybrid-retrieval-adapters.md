@@ -4,11 +4,12 @@
 Retrieval adapters for in-context prompt passages (Tier 1) and local hybrid knowledge bases (Tier 2), querying Qdrant (dense vectors) and BM25 (sparse keywords) concurrently and merging their candidate rankings via Reciprocal Rank Fusion ($k=60$) to return the top candidate evidence premises.
 
 **Sprint:** Sprint 1  
-**Owner:** Student 3 (Retrieval)  
+**Owner:** Student 3 (Harshad Patil - @HarshadPatil108 | Knowledge Systems & Retrieval Lead)  
 **Story Points:** 5 SP  
 **SRS Reference:** REQ-RET-04, REQ-RET-05, ADR-0004, ADR-0007  
+**GitHub Issue:** #14  
 **Blocked by:** 03 — Hybrid Knowledge Ingestion & Deterministic Dual-Index Store  
-**Status:** completed  
+**Status:** Done  
 
 ### Context & Scope
 Given an atomic claim query, this module provides the retrieval adapter interface `RetrievalAdapter.search(claim: str, tier: int, context_docs: List[str]) -> List[EvidenceCandidate]`. It implements the mathematical Reciprocal Rank Fusion (RRF) algorithm to combine semantic matches from Qdrant with exact keyword hits from BM25 without requiring NLI logic (which is cleanly decoupled in Ticket 05 and orchestrated in Ticket 06).
