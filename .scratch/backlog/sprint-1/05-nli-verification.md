@@ -4,9 +4,10 @@
 A CPU-optimized Natural Language Inference engine executing `cross-encoder/nli-deberta-v3-base` on premise-hypothesis pairs to produce normalized probabilities, assign 3-way discrete states (`SUPPORTED`, `CONTRADICTED`, `UNVERIFIED`), compute document reliability rates, and evaluate safety gating flags.
 
 **Sprint:** Sprint 1  
-**Owner:** Student 2 (Verification)  
+**Owner:** Student 2 (Balaji - @avulabalaji35-rgb | NLP & Verification Lead)  
 **Story Points:** 5 SP  
 **SRS Reference:** REQ-VER-04, REQ-VER-05, REQ-VER-06, NFR-PERF-02, ADR-0002, ADR-0005  
+**GitHub Issue:** #8  
 **Blocked by:** 02 — Deterministic Sentence & Clause Claim Segmenter, 04 — Hybrid Retrieval Adapters  
 **Status:** done  
 

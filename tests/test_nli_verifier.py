@@ -599,3 +599,38 @@ def test_map_deberta_probabilities_invalid_length() -> None:
     """Verify map_deberta_probabilities raises ValueError on wrong length."""
     with pytest.raises(ValueError, match="Expected 3 values"):
         map_deberta_probabilities([1.0, 2.0])
+
+
+# ==============================================================================
+# Student 2 Validation Suite: Safety Circuit Breaker Calibration (REQ-VER-06)
+# ==============================================================================
+
+
+def test_student_2_safety_circuit_breaker_calibration() -> None:
+    """Verify Student 2 circuit breaker helper accurately trips at tau_severe >= 0.85."""
+    from src.verifier.nli import calibrate_safety_circuit_breaker
+
+    # Safe cases
+    is_safe, msg = calibrate_safety_circuit_breaker(0.50, severe_threshold=0.85)
+    assert is_safe is True
+    assert msg == "Safe"
+
+    is_safe, msg = calibrate_safety_circuit_breaker(0.8499, severe_threshold=0.85)
+    assert is_safe is True
+
+    # Critical contradiction trip
+    is_safe, msg = calibrate_safety_circuit_breaker(0.85, severe_threshold=0.85)
+    assert is_safe is False
+    assert "Severe contradiction detected" in msg
+
+    is_safe, msg = calibrate_safety_circuit_breaker(0.995, severe_threshold=0.85)
+    assert is_safe is False
+
+
+def test_student_2_softmax_large_negative_logits() -> None:
+    """Verify compute_softmax handles large negative numbers without underflow to 0 total."""
+    probs = compute_softmax([-1000.0, -1000.0, -1000.0])
+    assert len(probs) == 3
+    assert all(math.isclose(p, 1.0 / 3.0, abs_tol=1e-5) for p in probs)
+    assert math.isclose(sum(probs), 1.0, abs_tol=1e-5)
+

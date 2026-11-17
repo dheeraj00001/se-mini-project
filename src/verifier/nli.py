@@ -1,5 +1,14 @@
 """CPU-Based DeBERTa-v3 NLI Verification Engine and Reliability Scoring.
 
+================================================================================
+Student 2 Ownership:
+- Author: Balaji (GitHub: @avulabalaji35-rgb)
+- Role: NLP & Verification Engine Lead
+- Subsystem: Module 2: CPU DeBERTa-v3 NLI Inference & Safety Gating
+- Deliverables: Ticket 05 (Sprint 1)
+- Architecture Decisions: ADR-0002 (CPU Allocation), ADR-0005 (Safety Gating)
+================================================================================
+
 Implements REQ-VER-04, REQ-VER-05, REQ-VER-06, NFR-PERF-02, ADR-0002, ADR-0005.
 
 Core Responsibilities:
@@ -26,6 +35,30 @@ from src.schemas.verification import (
     determine_claim_state_from_nli,
     map_nli_probabilities,
 )
+
+
+def calibrate_safety_circuit_breaker(
+    contradiction_probability: float,
+    severe_threshold: float = 0.85,
+) -> Tuple[bool, str]:
+    """Evaluate severe contradiction safety circuit breaker (ADR-0005, REQ-VER-06).
+
+    Student 2 Implementation:
+    Trips is_safe = False immediately when contradiction confidence exceeds severe_threshold.
+
+    Args:
+        contradiction_probability: Continuous P(contradiction) in [0.0, 1.0].
+        severe_threshold: Critical cutoff threshold (default 0.85).
+
+    Returns:
+        Tuple[bool, str]: (is_safe, violation_reason).
+    """
+    if contradiction_probability >= severe_threshold:
+        return (
+            False,
+            f"Severe contradiction detected: P(contradiction)={contradiction_probability:.4f} >= {severe_threshold:.2f}",
+        )
+    return True, "Safe"
 
 
 def compute_softmax(logits: Sequence[float]) -> List[float]:
