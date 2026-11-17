@@ -4,9 +4,10 @@
 A fast, deterministic NLP component that breaks raw AI-generated text into independent, atomic, verifiable claim strings using NLTK and syntactic heuristics without invoking any LLM passes, preserving epistemic hedges.
 
 **Sprint:** Sprint 1  
-**Owner:** Student 2 (Verification)  
+**Owner:** Student 2 (Balaji - @avulabalaji35-rgb | NLP & Verification Lead)  
 **Story Points:** 3 SP  
 **SRS Reference:** REQ-VER-01, REQ-VER-02, REQ-VER-03, NFR-PERF-01  
+**GitHub Issue:** #7  
 **Blocked by:** None — can start immediately  
 **Status:** Done  
 

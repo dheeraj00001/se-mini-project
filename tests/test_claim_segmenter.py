@@ -342,3 +342,32 @@ def test_nfr_perf_01_claim_segmentation_latency() -> None:
     assert len(claims) > 10
     # NFR-PERF-01 requirement: latency <= 5.0 ms
     assert elapsed_ms <= 5.0, f"Segmentation latency {elapsed_ms:.2f} ms exceeded 5.0 ms limit"
+
+
+# ==============================================================================
+# Student 2 Validation Suite: Extended Academic Hedges & Syntactic Boundaries
+# ==============================================================================
+
+
+def test_student_2_academic_epistemic_hedges() -> None:
+    """Verify Student 2 extended academic epistemic hedge patterns (REQ-VER-03)."""
+    text = (
+        "Preliminary data suggests that quantum processors achieve supremacy in specific tasks. "
+        "It is hypothesized that dark matter interacts weakly through gravity. "
+        "Purportedly, the experiment was reproduced in three independent laboratories."
+    )
+    claims = ClaimSegmenter.extract_claims(text)
+    assert len(claims) == 3
+    assert any("quantum processors achieve supremacy" in c.claim_text for c in claims)
+    assert any("dark matter interacts weakly" in c.claim_text for c in claims)
+    assert any("the experiment was reproduced" in c.claim_text for c in claims)
+
+
+def test_student_2_compound_clause_invariance() -> None:
+    """Verify syntactic clause splitter preserves subject in compound predicates (REQ-VER-02)."""
+    text = "The spacecraft entered lunar orbit and executed a retro-burn sequence."
+    claims = ClaimSegmenter.extract_claims(text)
+    assert len(claims) == 2
+    assert claims[0].claim_text == "The spacecraft entered lunar orbit"
+    assert "spacecraft executed a retro-burn sequence" in claims[1].claim_text or "The spacecraft executed" in claims[1].claim_text or "executed a retro-burn" in claims[1].claim_text
+

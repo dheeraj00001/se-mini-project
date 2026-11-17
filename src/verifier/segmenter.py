@@ -1,4 +1,14 @@
-"""Deterministic sentence and clause claim segmentation engine (REQ-VER-01..03)."""
+"""Deterministic sentence and clause claim segmentation engine (REQ-VER-01..03).
+
+================================================================================
+Student 2 Ownership:
+- Author: Balaji (GitHub: @avulabalaji35-rgb)
+- Role: NLP & Verification Engine Lead
+- Subsystem: Module 2: Claim Segmentation & Syntactic Clause Splitting
+- Deliverables: Ticket 02 (Sprint 1)
+- Architecture Decision: ADR-0004 (Deterministic Syntactic Splitting)
+================================================================================
+"""
 
 import re
 from typing import List, Optional
@@ -49,7 +59,7 @@ _LEADING_HEDGE_PATTERNS = [
     ),
     re.compile(
         r"^it\s+(?:is|was)\s+(?:believed|thought|claimed|said|assumed|alleged|reported|"
-        r"rumored|suggested)(?:\s+that)?\s+",
+        r"rumored|suggested|hypothesized)(?:\s+that)?\s+",
         re.IGNORECASE,
     ),
     re.compile(
@@ -58,7 +68,7 @@ _LEADING_HEDGE_PATTERNS = [
     ),
     re.compile(
         r"^some\s+(?:sources|experts|people|critics|historians)?\s*"
-        r"(?:claim|say|believe|suggest)(?:\s+that)?\s+",
+        r"(?:claim|say|believe|suggest|postulate)(?:\s+that)?\s+",
         re.IGNORECASE,
     ),
     re.compile(
@@ -66,7 +76,11 @@ _LEADING_HEDGE_PATTERNS = [
         re.IGNORECASE,
     ),
     re.compile(
-        r"^(?:apparently|reportedly|presumably|allegedly|supposedly|possibly|perhaps)[,\s]+",
+        r"^(?:apparently|reportedly|presumably|allegedly|supposedly|purportedly|possibly|perhaps)[,\s]+",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"^(?:in\s+light\s+of\s+recent\s+(?:studies|reports)|preliminary\s+data\s+suggests\s+that)[,\s]+",
         re.IGNORECASE,
     ),
 ]
