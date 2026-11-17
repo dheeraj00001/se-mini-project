@@ -423,3 +423,56 @@ def test_orchestrator_custom_injected_components() -> None:
 
     direct_default = WaterfallOrchestrator()
     assert direct_default.store is not None
+
+
+# ==============================================================================
+# Student 2 Validation Suite: Document Reliability Telemetry (REQ-VER-05)
+# ==============================================================================
+
+
+def test_student_2_telemetry_summary_generation() -> None:
+    """Verify Student 2 get_verification_telemetry_summary accurately compiles rates."""
+    from src.schemas.verification import ClaimReport, ClaimSegment, ClaimState, VerificationResponse
+    from src.verifier.orchestrator import get_verification_telemetry_summary
+
+    claims = [
+        ClaimReport(
+            claim=ClaimSegment(claim_id="c1", claim_text="Paris is the capital of France.", order=0),
+            state=ClaimState.SUPPORTED,
+            confidence=0.98,
+            probabilities={"entailment": 0.98, "neutral": 0.01, "contradiction": 0.01},
+        ),
+        ClaimReport(
+            claim=ClaimSegment(claim_id="c2", claim_text="Berlin is in Spain.", order=1),
+            state=ClaimState.CONTRADICTED,
+            confidence=0.92,
+            probabilities={"entailment": 0.01, "neutral": 0.07, "contradiction": 0.92},
+        ),
+        ClaimReport(
+            claim=ClaimSegment(claim_id="c3", claim_text="There are 500 stars in this cluster.", order=2),
+            state=ClaimState.UNVERIFIED,
+            confidence=0.40,
+            probabilities={"entailment": 0.20, "neutral": 0.70, "contradiction": 0.10},
+        ),
+    ]
+
+    response = VerificationResponse(
+        original_text="Test paragraph",
+        verified_text="Test paragraph",
+        claims=claims,
+        is_safe=False,
+        needs_review=True,
+        hallucination_rate=33.33,
+        verification_rate=33.33,
+        unverified_rate=33.33,
+    )
+
+    summary = get_verification_telemetry_summary(response)
+    assert summary["total_claims"] == 3
+    assert summary["supported_count"] == 1
+    assert summary["contradicted_count"] == 1
+    assert summary["unverified_count"] == 1
+    assert summary["is_safe"] is False
+    assert summary["needs_review"] is True
+    assert summary["hallucination_rate"] == 33.33
+

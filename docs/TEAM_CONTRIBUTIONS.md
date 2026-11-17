@@ -79,10 +79,12 @@ The **Dehallucination Add-On Module Gateway** is designed under strict modular s
 ---
 
 ### 👤 Student 2: NLP & Verification Engine Lead
+* **Name / GitHub**: Balaji ([@avulabalaji35-rgb](https://github.com/avulabalaji35-rgb))
 * **Primary Owned Module**: `Module 2: src/verifier/`
 * **Owned Requirements**: `REQ-VER-01`, `REQ-VER-02`, `REQ-VER-03`, `REQ-VER-04`, `REQ-VER-05`, `REQ-VER-06`, `NFR-PERF-01`
 * **Governing ADRs**: `ADR-0004` (Deterministic Proposition Extraction), `ADR-0005` (CPU DeBERTa-v3 NLI), `ADR-0009` (Threshold Calibration)
-* **Assigned Backlog Tickets**: Ticket 02, Ticket 05, Ticket 06
+* **Assigned Backlog Tickets**: Ticket 02, Ticket 05, Ticket 06 (PRs #10, #11, #12 closing Issues #7, #8, #9)
+* **Detailed Deliverables Document**: [docs/STUDENT_2_CONTRIBUTIONS.md](STUDENT_2_CONTRIBUTIONS.md)
 
 #### Core Engineering Deliverables
 1. **Deterministic Proposition Extraction (`src/verifier/segmenter.py`)**:

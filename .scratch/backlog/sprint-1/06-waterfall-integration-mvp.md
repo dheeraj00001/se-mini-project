@@ -4,9 +4,10 @@
 The central verification orchestrator that ties Claim Segmentation, Retrieval Adapters, and NLI Verification together into an NLI-aware cascading Waterfall loop, exposing the end-to-end working pipeline through `POST /verify` to deliver the working MVP for the Sprint-1 demo video.
 
 **Sprint:** Sprint 1  
-**Owner:** Student 1 (supported by Students 2 & 3; Student 4 GPU Spike)  
+**Owner:** Student 2 (Balaji - @avulabalaji35-rgb | Verification Lead) & Student 1  
 **Story Points:** 5 SP  
 **SRS Reference:** REQ-GW-02, REQ-RET-05, REQ-VER-05, REQ-VER-06, ADR-0004  
+**GitHub Issue:** #9  
 **Blocked by:** 01 — Core Gateway Scaffolding, 05 — CPU-Based DeBERTa-v3 NLI Verification  
 **Status:** done  
 

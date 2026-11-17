@@ -1,5 +1,14 @@
 """NLI-Aware Waterfall Verification Orchestrator and Pipeline Integration.
 
+================================================================================
+Student 2 Ownership:
+- Author: Balaji (GitHub: @avulabalaji35-rgb)
+- Role: NLP & Verification Engine Lead
+- Subsystem: Module 2: Waterfall Orchestration & Reliability Telemetry
+- Deliverables: Ticket 06 (Sprint 1 MVP Integration)
+- Architecture Decision: ADR-0004 (Cascading Waterfall Verification)
+================================================================================
+
 Implements REQ-GW-02, REQ-RET-05, REQ-VER-05, REQ-VER-06, ADR-0004, ADR-0005.
 
 Core Responsibilities:
@@ -15,7 +24,7 @@ Core Responsibilities:
 """
 
 import logging
-from typing import Any, List, Optional, Sequence, cast
+from typing import Any, Dict, List, Optional, Sequence, cast
 from src.gateway.middleware import get_server_max_tier
 from src.retrieval.adapters import (
     RetrievalAdapter,
@@ -41,6 +50,33 @@ from src.verifier.nli import (
 from src.verifier.segmenter import ClaimSegmenter
 
 logger = logging.getLogger(__name__)
+
+
+def get_verification_telemetry_summary(
+    response: VerificationResponse,
+) -> Dict[str, Any]:
+    """Compute structured telemetry summary from a VerificationResponse (REQ-VER-05).
+
+    Student 2 Diagnostic Telemetry Helper:
+    Summarizes claim distribution across discrete states, document rates, and safety flags.
+    """
+    claims = response.claims
+    supported_count = sum(1 for c in claims if c.state == ClaimState.SUPPORTED)
+    contradicted_count = sum(1 for c in claims if c.state == ClaimState.CONTRADICTED)
+    unverified_count = sum(1 for c in claims if c.state == ClaimState.UNVERIFIED)
+    total = len(claims)
+
+    return {
+        "total_claims": total,
+        "supported_count": supported_count,
+        "contradicted_count": contradicted_count,
+        "unverified_count": unverified_count,
+        "hallucination_rate": response.hallucination_rate,
+        "verification_rate": response.verification_rate,
+        "unverified_rate": response.unverified_rate,
+        "is_safe": response.is_safe,
+        "needs_review": response.needs_review,
+    }
 
 
 class WaterfallOrchestrator:
