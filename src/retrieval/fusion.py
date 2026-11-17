@@ -105,3 +105,30 @@ def reciprocal_rank_fusion(
         results.append(updated_chunk)
 
     return results
+
+
+def explain_rrf_scoring(
+    chunk_id: str,
+    rankings: Sequence[Sequence[Union[EvidenceChunk, Tuple[EvidenceChunk, float]]]],
+    k: int = DEFAULT_RRF_K,
+) -> Dict[str, Union[str, float, int, List[int]]]:
+    """Provide mathematical breakdown and per-modality ranks for a given chunk_id under RRF."""
+    ranks: List[int] = []
+    for ranked_list in rankings:
+        found_rank = 0
+        for idx, item in enumerate(ranked_list):
+            chunk = item[0] if isinstance(item, tuple) else item
+            if chunk.chunk_id == chunk_id:
+                found_rank = idx + 1
+                break
+        if found_rank > 0:
+            ranks.append(found_rank)
+
+    score = compute_rrf_score(ranks, k=k) if ranks else 0.0
+    return {
+        "chunk_id": chunk_id,
+        "k": k,
+        "modality_ranks": ranks,
+        "fused_rrf_score": score,
+    }
+

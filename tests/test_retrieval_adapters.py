@@ -20,7 +20,7 @@ from src.retrieval.adapters import (
     get_retrieval_adapter,
 )
 from src.retrieval.embedder import MockEmbedder
-from src.retrieval.fusion import compute_rrf_score, reciprocal_rank_fusion
+from src.retrieval.fusion import compute_rrf_score, explain_rrf_scoring, reciprocal_rank_fusion
 from src.retrieval.store import DualIndexStore
 from src.schemas.verification import EvidenceCandidate, EvidenceChunk
 
@@ -143,6 +143,27 @@ def test_ut_ret_04_rrf_edge_cases_and_validation() -> None:
     dup_res = reciprocal_rank_fusion([[chunk, chunk]], k=60)
     assert len(dup_res) == 1
     assert dup_res[0].score == pytest.approx(1.0 / 61.0)
+
+
+def test_ut_ret_04_explain_rrf_scoring() -> None:
+    """Verify explain_rrf_scoring provides accurate rank breakdown and fused scoring (REQ-RET-04)."""
+    c1 = make_dummy_chunk("chunk_alpha")
+    c2 = make_dummy_chunk("chunk_beta")
+    dense_ranking = [c1, c2]
+    sparse_ranking = [c2, c1]
+
+    explanation = explain_rrf_scoring("chunk_alpha", [dense_ranking, sparse_ranking], k=60)
+    assert explanation["chunk_id"] == "chunk_alpha"
+    assert explanation["k"] == 60
+    assert explanation["modality_ranks"] == [1, 2]
+    expected_score = (1.0 / 61.0) + (1.0 / 62.0)
+    assert explanation["fused_rrf_score"] == pytest.approx(expected_score)
+
+    # Missing chunk returns 0.0 and empty ranks
+    missing = explain_rrf_scoring("nonexistent", [dense_ranking, sparse_ranking], k=60)
+    assert missing["modality_ranks"] == []
+    assert missing["fused_rrf_score"] == 0.0
+
 
 
 def test_ut_ret_04_store_search_sparse() -> None:

@@ -19,6 +19,7 @@ from src.retrieval.embedder import (
 from src.retrieval.fusion import (
     DEFAULT_RRF_K,
     compute_rrf_score,
+    explain_rrf_scoring,
     reciprocal_rank_fusion,
 )
 from src.retrieval.ingest import IngestionPipeline
@@ -50,6 +51,7 @@ __all__ = [
     "compute_content_hash",
     "compute_file_hash",
     "compute_rrf_score",
+    "explain_rrf_scoring",
     "extract_text_from_bytes",
     "extract_text_from_file",
     "get_default_embedder",
