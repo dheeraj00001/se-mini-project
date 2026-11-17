@@ -101,6 +101,19 @@ def test_ut_ret_05_adapter_initialization_and_properties() -> None:
     assert default_adapter.server_max_tier in (1, 2, 3)
 
 
+def test_ut_ret_06_is_tier_allowed() -> None:
+    """Verify is_tier_allowed checks both client opt-in and server ceiling (REQ-RET-06, NFR-SEC-01)."""
+    allowed_adapter = Tier3WebAdapter(server_max_tier=3)
+    assert allowed_adapter.is_tier_allowed(client_max_tier=3) is True
+    assert allowed_adapter.is_tier_allowed(client_max_tier=2) is False
+    assert allowed_adapter.is_tier_allowed(client_max_tier=1) is False
+
+    capped_adapter = Tier3WebAdapter(server_max_tier=2)
+    assert capped_adapter.is_tier_allowed(client_max_tier=3) is False
+    assert capped_adapter.is_tier_allowed(client_max_tier=2) is False
+
+
+
 def test_ut_ret_05_search_successful_snippet_parsing() -> None:
     """Verify DuckDuckGo search results parse into structured EvidenceCandidate chunks."""
     raw_results = [

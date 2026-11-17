@@ -4,11 +4,12 @@
 An asynchronous external search adapter using `duckduckgo-search` that queries the live web for evidence snippets only when the client explicitly requests `max_retrieval_tier == 3` and the server-side ceiling (`SERVER_MAX_TIER >= 3`) permits it.
 
 **Sprint:** Sprint 2  
-**Owner:** Student 3 (Retrieval)  
+**Owner:** Student 3 (Harshad Patil - @HarshadPatil108 | Knowledge Systems & Retrieval Lead)  
 **Story Points:** 3 SP  
 **SRS Reference:** REQ-RET-05, REQ-RET-06, NFR-SEC-01, ADR-0004  
+**GitHub Issue:** #15  
 **Blocked by:** 04 — Hybrid Retrieval Adapters & Reciprocal Rank Fusion  
-**Status:** completed  
+**Status:** Done  
 
 ### Context & Scope
 When local knowledge (Tiers 1 & 2) fails to find relevant premises, the engine can escalate to Tier 3 web search. However, this is strictly opt-in to preserve user privacy and prevent data leakage in enterprise/air-gapped setups (`NFR-SEC-01`). If web search is disabled, unavailable, or yields irrelevant snippets, the claim is safely categorized as `UNVERIFIED`.
