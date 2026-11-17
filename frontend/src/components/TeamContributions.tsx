@@ -94,7 +94,7 @@ export const TeamContributions: React.FC = () => {
       ],
     },
     {
-      student: 'Student 3',
+      student: 'Student 3 (Harshad Patil)',
       role: 'Knowledge Systems & Retrieval Lead',
       featureTitle: 'Feature 3: Hybrid Knowledge Ingestion & Retrieval Engine',
       module: 'Module 3: src/retrieval/',

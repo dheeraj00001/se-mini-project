@@ -262,6 +262,10 @@ class Tier3WebAdapter(BaseRetrievalAdapter):
         """Return the immutable server max tier ceiling."""
         return self._server_max_tier
 
+    def is_tier_allowed(self, client_max_tier: int) -> bool:
+        """Check whether Tier 3 execution is authorized under both client request and server ceiling."""
+        return client_max_tier == 3 and self._server_max_tier >= 3
+
     def search(
         self,
         claim: str,

@@ -111,10 +111,12 @@ The **Dehallucination Add-On Module Gateway** is designed under strict modular s
 ---
 
 ### 👤 Student 3: Knowledge Systems & Retrieval Lead
+* **Name / GitHub**: Harshad Patil ([@HarshadPatil108](https://github.com/HarshadPatil108))
 * **Primary Owned Module**: `Module 3: src/retrieval/`
 * **Owned Requirements**: `REQ-RET-01`, `REQ-RET-02`, `REQ-RET-03`, `REQ-RET-04`, `REQ-RET-05`, `REQ-RET-06`
 * **Governing ADRs**: `ADR-0007` (Qdrant Dense + BM25 Sparse Hybrid Store)
-* **Assigned Backlog Tickets**: Ticket 03, Ticket 04, Ticket 09
+* **Assigned Backlog Tickets**: Ticket 03, Ticket 04, Ticket 09 (PRs #16, #17, #18 closing Issues #13, #14, #15)
+* **Detailed Deliverables Document**: [docs/STUDENT_3_CONTRIBUTIONS.md](STUDENT_3_CONTRIBUTIONS.md)
 
 #### Core Engineering Deliverables
 1. **Multi-Format Ingestion Pipeline (`src/retrieval/ingest.py`, `src/retrieval/chunker.py`, `src/retrieval/parser.py`)**:
