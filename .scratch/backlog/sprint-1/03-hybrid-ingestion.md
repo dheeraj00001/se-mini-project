@@ -4,11 +4,12 @@
 A document ingestion service that extracts text from PDF, Markdown, and TXT files, chunks text into 250–300 token windows with 50-token overlap, calculates SHA-256 deterministic chunk IDs, and persists entries in both a local file-backed Qdrant vector store and a disk-serialized BM25 index.
 
 **Sprint:** Sprint 1  
-**Owner:** Student 3 (Retrieval)  
+**Owner:** Student 3 (Harshad Patil - @HarshadPatil108 | Knowledge Systems & Retrieval Lead)  
 **Story Points:** 5 SP  
 **SRS Reference:** REQ-RET-01, REQ-RET-02, REQ-RET-03, ADR-0007  
+**GitHub Issue:** #13  
 **Blocked by:** None — can start immediately  
-**Status:** completed  
+**Status:** Done  
 
 ### Context & Scope
 For Tier 2 retrieval, reference knowledge must be searchable both semantically (dense embeddings) and lexically (exact keyword matches). Ingestion must ensure that both Qdrant and BM25 reference identical chunk boundaries and IDs, persisting data on disk to survive application restarts.

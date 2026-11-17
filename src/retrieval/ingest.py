@@ -131,3 +131,15 @@ class IngestionPipeline:
             chunk_ids=all_chunk_ids,
             source_documents=source_docs,
         )
+
+    def get_ingestion_telemetry(self) -> dict:
+        """Return active knowledge base telemetry and dual-index synchronization statistics."""
+        return {
+            "window_size": self._window_size,
+            "overlap": self._overlap,
+            "indexed_chunks_count": len(self._store._chunks),
+            "indexed_documents_count": len(self._store._doc_hashes),
+            "collection_name": self._store._collection_name,
+            "is_in_memory": self._store._in_memory,
+        }
+
